@@ -1,0 +1,13 @@
+Hallo {publication.reviewer.name.firstName},
+
+Der Benutzer "{publication.author.name.fullName}" bittet dich seine/ihre Änderungen zu überprüfen und freizugeben.
+
+<f:if condition="{publication.comment}">
+Folgender Kommentar wurde übermittelt:
+**************************************
+{publication.comment}
+**************************************
+</f:if>
+
+Du kannst die Änderungen hier einsehen: {uriToPublication}
+

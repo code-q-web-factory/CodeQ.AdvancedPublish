@@ -1,0 +1,22 @@
+{
+    "description": "The package adds a review workflow and change logs to the Neos publication function",
+    "type": "neos-package",
+    "name": "codeq/advancedpublish",
+    "require": {
+        "neos/neos": "^7 || ^8",
+        "sandstorm/templatemailer": "^2",
+        "codeq/revisions": "*",
+        "ext-bz2": "*",
+        "ext-igbinary": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "CodeQ\\AdvancedPublish\\": "Classes/"
+        }
+    },
+    "extra": {
+        "neos": {
+            "package-key": "CodeQ.AdvancedPublish"
+        }
+    }
+}

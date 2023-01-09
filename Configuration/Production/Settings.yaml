@@ -1,0 +1,4 @@
+CodeQ:
+  AdvancedPublish:
+    protocol:
+      enableCompression: true

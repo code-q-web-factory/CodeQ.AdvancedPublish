@@ -1,0 +1,9 @@
+-
+  requestFilter: 'isPackage("CodeQ.AdvancedPublish")'
+  viewObjectName: Neos\FluidAdaptor\View\TemplateView
+  options:
+    layoutRootPaths:
+      - 'resource://Neos.Neos/Private/Layouts'
+    partialRootPaths:
+      - 'resource://CodeQ.AdvancedPublish/Private/Partials'
+      - 'resource://Neos.Neos/Private/Partials'

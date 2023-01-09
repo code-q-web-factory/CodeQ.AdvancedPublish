@@ -1,0 +1,77 @@
+{namespace neos=Neos\Neos\ViewHelpers}
+<f:layout name="BackendSubModule" />
+
+<f:section name="content">
+    <div class="neos-content neos-container-fluid">
+        <f:link.action action="index" arguments="{filter: ''}" class="neos-button{f:if(condition: '!{filter} || {filter} == \'\'', then: ' neos-active')}"><i class="fa fa-user"></i> Meine Veröffentlichungen</f:link.action>
+
+        <f:security.ifAccess privilegeTarget="CodeQ.AdvancedPublish:PublicationBackendModuleController.canReviewAssignedPublications">
+            <f:link.action action="index" arguments="{filter: 'assigned'}" class="neos-button{f:if(condition: '{filter} == \'assigned\'', then: ' neos-active')}"><i class="fa fa-check-circle"></i> Mir zugewiesen</f:link.action>
+        </f:security.ifAccess>
+
+        <f:security.ifAccess privilegeTarget="CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewAllPublications">
+            <f:link.action action="index" arguments="{filter: 'all'}" class="neos-button{f:if(condition: '{filter} == \'all\'', then: ' neos-active')}"><i class="fa fa-list"></i> Alle</f:link.action>
+        </f:security.ifAccess>
+
+        <br />
+        <br />
+
+        <div class="neos-row-fluid">
+            <f:if condition="{publications}">
+                <f:widget.paginate objects="{publications}" as="paginatedPublications">
+                    <table class="neos-table">
+                        <thead>
+                        <tr>
+                            <th style="width: 46px"></th>
+                            <th style="width: 140px">Eingereicht</th>
+                            <th>Autor</th>
+                            <th>Reviewer</th>
+                            <th style="width:100px"></th>
+                        </tr>
+                        </thead>
+                        <f:for each="{paginatedPublications}" key="index" as="publication">
+                            <tr>
+                                <td>
+                                    <f:alias map="{icon: {pending: 'fa-question-circle', approved: 'fa-check-circle', declined: 'fa-times-circle', withdrawn: 'fa-minus-circle'}}">
+                                        <i class="fa {icon.{publication.status}}"></i>
+                                    </f:alias>
+                                </td>
+                                <td>{publication.created->f:format.date(format: 'd.m.Y H:i')}</td>
+                                <td>{f:render(partial: 'UserName', arguments: {user: publication.editor})}</td>
+                                <td>{f:render(partial: 'UserName', arguments: {user: publication.reviewer})}</td>
+                                <td class="neos-action">
+                                    <div class="neos-pull-right">
+                                        <f:link.action action="show" arguments="{publication: publication}" class="neos-button neos-button-primary"><i class="fa fa-eye"></i></f:link.action>
+
+                                        <f:if condition="{publication.canBeReviewedByCurrentUser}">
+                                            <f:then>
+                                                <f:link.action action="review" arguments="{publication: publication}" class="neos-button neos-button-secondary"><i class="fa fa-check"></i></f:link.action>
+                                            </f:then>
+                                            <f:else>
+                                                <button class="neos-button neos-button-secondary" disabled="disabled"><i class="fa fa-check"></i></button>
+                                            </f:else>
+                                        </f:if>
+                                    </div>
+                                </td>
+                            </tr>
+                        </f:for>
+                    </table>
+                </f:widget.paginate>
+            </f:if>
+        </div>
+        <div class="neos-footer">
+            <f:security.ifAccess privilegeTarget="CodeQ.AdvancedPublish:PublicationBackendModuleController.canCreatePublications">
+                <f:link.action action="new" class="neos-button neos-button-primary">Neue Veröffentlichung erstellen</f:link.action>
+            </f:security.ifAccess>
+
+            <div class="neos-pull-right">
+                <button form="postHelper" formaction="{f:uri.action(action: 'discardPersonalWorkspace')}" type="submit" class="neos-button neos-button-warning">
+                    <i class="fas fa-ban icon-white"></i>
+                    Eigene aktuelle Änderungen verwerfen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <f:form action="index" id="postHelper" method="post"></f:form>
+</f:section>

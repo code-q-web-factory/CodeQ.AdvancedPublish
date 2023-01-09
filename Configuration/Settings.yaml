@@ -1,0 +1,20 @@
+CodeQ:
+  AdvancedPublish:
+    # this option enables all signals and aspects
+    enabled: true
+    notifications:
+      # e.g. the domain of the website, will be used to generate links to the backend module
+      baseUri: null
+      sendNotificationEmails: false
+      templateMailerSender: 'default'
+      administratorEmails: []
+    anonymizeCommand:
+      # e.g. a date modifier string that will be subtracted from the current date or false to disable this feature
+      lifetime: false
+    cleanupCommand:
+      # e.g. a date modifier string that will be subtracted from the current date or false to disable this feature
+      lifetime: false
+    protocol:
+      avoidPrinting: false
+      avoidCopying: false
+      enableCompression: false

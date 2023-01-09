@@ -1,0 +1,218 @@
+{namespace neos=Neos\Neos\ViewHelpers}
+<f:layout name="BackendSubModule" />
+
+<f:section name="content">
+    <script>document.body.classList.add('neos-module-management-workspaces')</script>
+    <f:if condition="{canCreateNewPublication}">
+        <f:then>
+            <legend>Neue Veröffentlichung erstellen</legend>
+            <f:form id="createForm" action="create" data="{currentUser: '{currentUser->f:format.identifier()}'}">
+                <div class="neos-row-fluid neos-module-container">
+                    <fieldset class="neos-span5">
+                        <div class="neos-control-group{f:validation.ifHasErrors(for: 'reviewer', then: ' neos-error')}">
+                            <label class="neos-control-label" for="reviewer">Reviewer</label>
+                            <div class="neos-controls">
+                                <f:form.select
+                                        name="reviewer"
+                                        options="{authorizedReviewers}"
+                                        id="reviewer"
+                                        optionLabelField="name.fullName"
+                                        prependOptionValue=""
+                                        prependOptionLabel="Wähle einen Reviewer aus..."
+                                        additionalAttributes="{required: 'required'}"
+                                        style="width:100%"
+                                />
+
+                                <p id="currentUserAsReviewerWarning" class="neos-help-block neos-warning" style="display:none">
+                                    Du hast dich selber als Reviewer ausgewählt. Bitte verwende diese Funktion nur für Notfälle und bedenke, dass die Redaktionsleitung darüber verständigt wird!
+                                </p>
+
+                                <f:render partial="Module/Shared/FieldValidationResults" arguments="{fieldname: 'reviewer'}"/>
+                            </div>
+                        </div>
+
+                        <div class="neos-control-group">
+                            <label class="neos-control-label" for="comment">Kommentar der Änderungen (optional)</label>
+                            <div class="neos-controls">
+                                <f:form.textarea
+                                        name="comment"
+                                        id="comment"
+                                        rows="5"
+                                        style="width:100%"
+                                />
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <legend>Deine Änderungen</legend>
+                <br />
+                <br />
+
+                <div class="neos-row-fluid">
+                    <table class="neos-table">
+                        <tbody>
+                        <f:for each="{siteChanges}" as="site">
+                            <f:for each="{site.documents}" key="documentPath" as="document">
+                                <tr class="neos-document" data-nodepath="{document.documentNode.path}" data-ismoved="{f:if(condition: document.isMoved, then: 'true', else: 'false')}" data-isnew="{f:if(condition: document.isNew, then: 'true', else: 'false')}">
+                                    <f:if condition="{document.changes -> f:count()} > 1">
+                                        <f:then>
+                                            <td class="check neos-priority1">
+                                                <label for="check-document-{document.documentNode.identifier}" class="neos-checkbox"><f:form.checkbox id="check-document-{document.documentNode.identifier}" class="neos-check-document" value="{document.documentNode.identifier}"/><span></span></label>
+                                            </td>
+                                            <td class="neos-priority1 path-caption">
+                                        </f:then>
+                                        <f:else>
+                                            <td colspan="2" class="neos-priority1 path-caption">
+                                        </f:else>
+                                    </f:if>
+                                    <div class="neos-row-fluid">
+                                        <div class="neos-span2">
+                                            {neos:backend.translate(id: 'pathCaption', source: 'Main', package: 'Neos.Neos')}:
+                                            <f:render partial="Module/Shared/DocumentBreadcrumb" arguments="{node: document.documentNode, showIcon: true}"></f:render>
+                                        </div>
+
+                                        <div class="neos-span2 neos-pull-right neos-aRight">
+                                            <f:if condition="{document.documentNode.removed}">
+                                                <f:else>
+                                                    <neos:link.node node="{document.documentNode}" absolute="1" target="neosPreview" class="neos-button" title="{neos:backend.translate(id: 'workspaces.openPageInWorkspace', source: 'Modules', package: 'Neos.Neos', value: 'Open page in \"{0}\" workspace', arguments: {0: selectedWorkspaceLabel})}" additionalAttributes="{data-neos-toggle: 'tooltip'}"><i class="fas fa-external-link-alt icon-white"></i></neos:link.node>
+                                                </f:else>
+                                            </f:if>
+                                        </div>
+                                    </div>
+                                    </td>
+                                    <td class="neos-action neos-folder">
+                                        <i class="fold-toggle fas fa-chevron-up icon-white" data-toggle="fold-{document.documentNode.identifier}"></i>
+                                    </td>
+                                </tr>
+                                <f:for each="{document.changes}" key="relativePath" as="change">
+                                    <tr class="neos-change fold-{document.documentNode.identifier} document-{document.documentNode.identifier}" data-nodepath="{change.node.path}" data-ismoved="{f:if(condition: change.isMoved, then: 'true', else: 'false')}" data-isnew="{f:if(condition: change.isNew, then: 'true', else: 'false')}">
+                                        <td class="neos-priority1"></td>
+                                        <td id="change-{change.node.identifier}" {f:render(partial: 'Module/Management/Workspaces/ContentChangeAttributes', arguments: {change: change})} data-neos-toggle="tooltip" data-placement="left" data-container="body">
+                                        <f:render partial="Module/Management/Workspaces/ContentChangeDiff" arguments="{change: change, contentDimensions: contentDimensions}"/>
+                                        </td>
+                                        <td class="neos-action"></td>
+                                    </tr>
+                                </f:for>
+                            </f:for>
+                        </f:for>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="neos-footer">
+                    <f:link.action action="index" class="neos-button">Zurück</f:link.action>
+                    <f:form.submit id="submit" value="Veröffentlichung erstellen" class="neos-button neos-button-primary" />
+                    <f:form.submit id="submit-and-approve" value="Veröffentlichung erstellen und freigeben" class="neos-button neos-button-primary neos-hidden" additionalAttributes="{formaction: '{f:uri.action(action: \'createAndApprove\')}'}" />
+                </div>
+            </f:form>
+        </f:then>
+        <f:else>
+            <f:if condition="{hasSiteChanges}">
+                <f:else>
+                    <legend>Keine Veränderungen festgestellt</legend>
+                    <div class="neos-row-fluid neos-module-container">
+                        <fieldset class="neos-span5">
+                            <p>
+                                Es gibt aktuell keine Änderungen die zur Veröffentlichung eingereicht werden können.<br>
+                                Bitte ändere etwas am Inhalt der Website und veröffentliche die Änderungen auf deinem privaten Arbeitsbereich.
+                            </p>
+                        </fieldset>
+                    </div>
+
+                    <div class="neos-footer">
+                        <f:link.action action="index" class="neos-button">Zurück</f:link.action>
+                    </div>
+                </f:else>
+            </f:if>
+            <f:if condition="{userHasNoPendingPublications}">
+                <f:else>
+                    <legend>Offene Veröffentlichung festgestellt</legend>
+                    <div class="neos-row-fluid neos-module-container">
+                        <fieldset class="neos-span5">
+                            <p>Es ist noch eine Veröffentlichung in Bearbeitung. Bitte warte bis diese bearbeitet wurde oder ziehe die Veröffentlichung zurück.</p>
+                        </fieldset>
+                    </div>
+
+                    <div class="neos-footer">
+                        <f:link.action action="index" class="neos-button">Zurück</f:link.action>
+                        <f:link.action action="show" arguments="{publication: pendingPublication}" class="neos-button neos-button-primary">Weiter zur Veröffentlichung in Bearbeitung</f:link.action>
+                    </div>
+                </f:else>
+            </f:if>
+        </f:else>
+    </f:if>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            jQuery(function($) {
+                jQuery('#check-all').change(function() {
+                    var value = false;
+                    if (jQuery(this).is(':checked')) {
+                        value = true;
+                        jQuery('.batch-action').removeClass('neos-hidden').removeClass('neos-disabled').removeAttr('disabled');
+                    } else {
+                        jQuery('.batch-action').addClass('neos-hidden').addClass('neos-disabled').attr('disabled', 'disabled');
+                    }
+                    jQuery('tbody input[type="checkbox"]').prop('checked', value);
+                });
+
+                jQuery('.neos-check-document').change(function() {
+                    var documentIdentifier = jQuery(this).val();
+                    var checked = jQuery(this).prop('checked');
+                    jQuery(this).closest('table').find('tr.neos-change.document-' + documentIdentifier + ' td.check input').prop('checked', checked);
+                });
+
+                jQuery('tbody input[type="checkbox"]').change(function() {
+                    if (jQuery(this).closest('tr').data('ismoved') === true || jQuery(this).closest('tr').data('isnew') === true) {
+                        var currentNodePath = jQuery(this).closest('tr').attr('data-nodepath') + '/';
+                        var checked = jQuery(this).prop('checked');
+
+                        function nodePathStartsWith(nodePath) {
+                            return function(index, element) {
+                                return nodePath.indexOf(jQuery(element).data('nodepath')) === 0;
+                            }
+                        }
+                        var movedOrNewParentDocuments = jQuery(this).closest('table').find('.neos-document[data-ismoved="true"], .neos-document[data-isnew="true"]').filter(nodePathStartsWith(currentNodePath));
+                        jQuery(movedOrNewParentDocuments).each(function(index, movedParentDocument) {
+                            jQuery('tr[data-nodepath^="' + jQuery(movedParentDocument).data('nodepath') + '"] td.check input').prop('checked', checked);
+                        });
+                    }
+
+                    if (jQuery('tbody input[type="checkbox"]:checked').length > 0) {
+                        jQuery('.batch-action').removeClass('neos-hidden').removeClass('neos-disabled').removeAttr('disabled')
+                    } else {
+                        jQuery('.batch-action').addClass('neos-hidden').addClass('neos-disabled').attr('disabled', 'disabled');
+                    }
+                });
+
+                jQuery('.fold-toggle').click(function() {
+                    jQuery(this).toggleClass('fas fa-chevron-down fas fa-chevron-up');
+                    jQuery('tr.' + jQuery(this).data('toggle')).toggle();
+                });
+            });
+        });
+
+        document.querySelector('[name*="reviewer"]').addEventListener('change', (event) => {
+            const reviewerField = event.target
+            const form = document.querySelector('form')
+            const currentUserIdentifier = form.dataset.currentuser
+            const currentUserAsReviewerWarning = document.getElementById('currentUserAsReviewerWarning')
+            const closestControlGroup = reviewerField.closest('.neos-control-group')
+            const submitButton = document.getElementById('submit')
+            const submitAndApproveButton = document.getElementById('submit-and-approve')
+
+            if (reviewerField.value === currentUserIdentifier) {
+                currentUserAsReviewerWarning.style.display = 'block'
+                closestControlGroup?.classList.add('neos-warning')
+                submitButton.classList.add('neos-hidden')
+                submitAndApproveButton.classList.remove('neos-hidden')
+            } else {
+                currentUserAsReviewerWarning.style.display = 'none'
+                closestControlGroup?.classList.remove('neos-warning')
+                submitButton.classList.remove('neos-hidden')
+                submitAndApproveButton.classList.add('neos-hidden')
+            }
+        })
+    </script>
+</f:section>

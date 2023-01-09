@@ -1,0 +1,106 @@
+privilegeTargets:
+  'Neos\Flow\Security\Authorization\Privilege\Method\MethodPrivilege':
+    'CodeQ.AdvancedPublish:PublicationBackendModuleController.canDiscardPersonalWorkspace':
+      matcher: 'method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->discardPersonalWorkspaceAction())'
+    'CodeQ.AdvancedPublish:PublicationBackendModuleController.canListOwnPublications':
+      matcher: 'method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->indexAction(filter == null))'
+    'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewOwnPublications':
+      matcher: 'method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->showAction(publication.editor === current.userInformation.backendUser))'
+    'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewAssignedPublications':
+      matcher: 'method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->indexAction(filter === "assigned"))'
+    'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewAllPublications':
+      matcher: 'method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->indexAction(filter === "all")) || method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->showAction())'
+    'CodeQ.AdvancedPublish:PublicationBackendModuleController.canCreatePublications':
+      matcher: 'method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->newAction()) || method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->createAction(reviewer !== current.userInformation.backendUser))'
+    'CodeQ.AdvancedPublish:PublicationBackendModuleController.canCreateSelfReviewedPublications':
+      matcher: 'method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->(create|createAndApprove)Action(reviewer === current.userInformation.backendUser))'
+    'CodeQ.AdvancedPublish:PublicationBackendModuleController.canWithdrawOwnPublication':
+      matcher: 'method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->withdrawAction(publication.editor === current.userInformation.backendUser, publication.status === "pending"))'
+    'CodeQ.AdvancedPublish:PublicationBackendModuleController.canReviewAssignedPublications':
+      matcher: 'method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->(review|resolve)Action(publication.reviewer === current.userInformation.backendUser, publication.status === "pending"))'
+    'CodeQ.AdvancedPublish:PublicationBackendModuleController.canReviewSelfAssignedPublications':
+      matcher: 'method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->(review|resolve)Action(publication.editor === current.userInformation.backendUser, publication.reviewer === current.userInformation.backendUser, publication.status === "pending"))'
+
+#  'Neos\Flow\Security\Authorization\Privilege\Entity\Doctrine\EntityPrivilege':
+#    'CodeQ.AdvancedPublish:Publication.canViewAll':
+#      matcher: 'isType("CodeQ\AdvancedPublish\Domain\Model\Publication")'
+#    'CodeQ.AdvancedPublish:Publication.canViewOwn':
+#      matcher: 'isType("CodeQ\AdvancedPublish\Domain\Model\Publication") && (property("editor").equals("context.userInformation.backendUser"))'
+#    'CodeQ.AdvancedPublish:Publication.canViewAssigned':
+#      matcher: 'isType("CodeQ\AdvancedPublish\Domain\Model\Publication") && (property("reviewer").equals("context.userInformation.backendUser"))'
+
+roles:
+  'Neos.Neos:AbstractEditor':
+    privileges:
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canDiscardPersonalWorkspace'
+        permission: GRANT
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canListOwnPublications'
+        permission: GRANT
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewOwnPublications'
+        permission: GRANT
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canCreatePublications'
+        permission: GRANT
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canWithdrawOwnPublication'
+        permission: GRANT
+#      - privilegeTarget: 'CodeQ.AdvancedPublish:Publication.canViewOwn'
+#        permission: GRANT
+
+  'CodeQ.AdvancedPublish:CanViewProtocol':
+    abstract: true
+    privileges:
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewAllPublications'
+        permission: GRANT
+#      - privilegeTarget: 'CodeQ.AdvancedPublish:Publication.canViewAll'
+#        permission: GRANT
+#      - privilegeTarget: 'CodeQ.AdvancedPublish:Publication.canViewAssigned'
+#        permission: GRANT
+#      - privilegeTarget: 'CodeQ.AdvancedPublish:Publication.canViewOwn'
+#        permission: GRANT
+
+  'CodeQ.AdvancedPublish:CanReview':
+    abstract: true
+    privileges:
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewAssignedPublications'
+        permission: GRANT
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canReviewAssignedPublications'
+        permission: GRANT
+#      - privilegeTarget: 'CodeQ.AdvancedPublish:Publication.canViewAssigned'
+#        permission: GRANT
+#      - privilegeTarget: 'CodeQ.AdvancedPublish:Publication.canViewOwn'
+#        permission: GRANT
+
+  'CodeQ.AdvancedPublish:CanReviewOwnRequests':
+    abstract: true
+    privileges:
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewAssignedPublications'
+        permission: GRANT
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canReviewAssignedPublications'
+        permission: GRANT
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canCreateSelfReviewedPublications'
+        permission: GRANT
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canReviewSelfAssignedPublications'
+        permission: GRANT
+#      - privilegeTarget: 'CodeQ.AdvancedPublish:Publication.canViewAssigned'
+#        permission: GRANT
+#      - privilegeTarget: 'CodeQ.AdvancedPublish:Publication.canViewOwn'
+#        permission: GRANT
+
+
+  'Neos.Neos:Administrator':
+    privileges:
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewAllPublications'
+        permission: GRANT
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewAssignedPublications'
+        permission: GRANT
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canReviewAssignedPublications'
+        permission: GRANT
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canCreateSelfReviewedPublications'
+        permission: GRANT
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canReviewSelfAssignedPublications'
+        permission: GRANT
+#      - privilegeTarget: 'CodeQ.AdvancedPublish:Publication.canViewAll'
+#        permission: GRANT
+#      - privilegeTarget: 'CodeQ.AdvancedPublish:Publication.canViewAssigned'
+#        permission: GRANT
+#      - privilegeTarget: 'CodeQ.AdvancedPublish:Publication.canViewOwn'
+#        permission: GRANT

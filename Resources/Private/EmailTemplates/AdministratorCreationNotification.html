@@ -1,0 +1,13 @@
+<p>Hallo,</p>
+
+<p>Der Benutzer &raquo;{publication.editor.name.fullName}&laquo; hat eine selbst-begutachtete Freigabeanfrage erstellt.</p>
+
+<f:if condition="{publication.comment}">
+    <p>Folgender Kommentar wurde übermittelt:</p>
+    <blockquote>
+        {publication.comment}
+    </blockquote>
+</f:if>
+
+<p>Du kannst die Änderungen hier einsehen: <a href="{uriToPublication}">{uriToPublication}</a></p>
+

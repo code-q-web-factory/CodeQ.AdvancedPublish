@@ -1,0 +1,4 @@
+Sandstorm:
+  TemplateMailer:
+    templatePackages:
+      900: 'CodeQ.AdvancedPublish'

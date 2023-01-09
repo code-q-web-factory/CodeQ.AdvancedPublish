@@ -1,0 +1,11 @@
+Neos:
+  Neos:
+    modules:
+      management:
+        submodules:
+          publications:
+            label: 'Veröffentlichungen'
+            controller: 'CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController'
+            description: 'i18n'
+            icon: 'icon-star'
+            mainStylesheet: 'Lite'

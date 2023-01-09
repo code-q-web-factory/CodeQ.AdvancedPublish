@@ -1,0 +1,3 @@
+Hallo {publication.reviewer.name.firstName},
+
+Der Benutzer "{publication.author.name.fullName}" hat seine Änderungen zurückgezogen.

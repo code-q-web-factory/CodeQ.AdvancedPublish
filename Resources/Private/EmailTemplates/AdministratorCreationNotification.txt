@@ -1,0 +1,13 @@
+Hallo,
+
+Der Benutzer "{publication.editor.name.fullName}" hat eine selbst-begutachtete Freigabeanfrage erstellt.
+
+<f:if condition="{publication.comment}">
+Folgender Kommentar wurde übermittelt:
+**************************************
+{publication.comment}
+**************************************
+</f:if>
+
+Du kannst die Änderungen hier einsehen: {uriToPublication}
+

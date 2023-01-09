@@ -1,0 +1,110 @@
+{namespace neos=Neos\Neos\ViewHelpers}
+<f:layout name="BackendSubModule" />
+
+<f:section name="content">
+    <script>document.body.classList.add('neos-module-management-workspaces')</script>
+    <f:form action="resolve" object="{publication}" objectName="publication" id="publicationForm">
+        <f:form.hidden name="action" value="approve" />
+
+        <legend>Änderungen von &raquo;{f:render(partial: 'UserName', arguments: {user: publication.editor})}&laquo; am {publication.created -> f:format.date(format: 'd.m.Y H:i')}</legend>
+        <br />
+        <div class="neos-row-fluid neos-module-container">
+            <fieldset class="neos-span6">
+                <h2>Kommentar des Autors</h2>
+                <br />
+                <f:if condition="{publication.comment}">
+                    <f:then>
+                        <p>{publication.comment}</p>
+                    </f:then>
+                    <f:else>
+                        <p><i>Kein Kommentar</i></p>
+                    </f:else>
+                </f:if>
+            </fieldset>
+        </div>
+        <br />
+        <div class="neos-row-fluid">
+            <table class="neos-table">
+                <tbody>
+                <f:for each="{siteChanges}" as="site">
+                    <f:for each="{site.documents}" key="documentPath" as="document">
+                        <tr class="neos-document" data-nodepath="{document.documentNode.path}" data-ismoved="{f:if(condition: document.isMoved, then: 'true', else: 'false')}" data-isnew="{f:if(condition: document.isNew, then: 'true', else: 'false')}">
+                            <td colspan="2" class="neos-priority1 path-caption">
+                                <div class="neos-row-fluid">
+                                    <div class="neos-span2">
+                                        {neos:backend.translate(id: 'pathCaption', source: 'Main', package: 'Neos.Neos')}:
+                                        <f:render partial="Module/Shared/DocumentBreadcrumb" arguments="{node: document.documentNode, showIcon: true}"></f:render>
+                                    </div>
+
+                                    <div class="neos-span2 neos-pull-right neos-aRight">
+                                        <f:if condition="{document.documentNode.removed}">
+                                            <f:else>
+                                                <neos:link.node node="{document.documentNode}" absolute="1" target="neosPreview" class="neos-button" title="{neos:backend.translate(id: 'workspaces.openPageInWorkspace', source: 'Modules', package: 'Neos.Neos', value: 'Open page in \"{0}\" workspace', arguments: {0: selectedWorkspaceLabel})}" additionalAttributes="{data-neos-toggle: 'tooltip'}"><i class="fas fa-external-link-alt icon-white"></i></neos:link.node>
+                                            </f:else>
+                                        </f:if>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="neos-action neos-folder">
+                                <i class="fold-toggle fas fa-chevron-up icon-white" data-toggle="fold-{document.documentNode.identifier}"></i>
+                            </td>
+                        </tr>
+                        <f:for each="{document.changes}" key="relativePath" as="change">
+                            <tr class="neos-change fold-{document.documentNode.identifier} document-{document.documentNode.identifier}" data-nodepath="{change.node.path}" data-ismoved="{f:if(condition: change.isMoved, then: 'true', else: 'false')}" data-isnew="{f:if(condition: change.isNew, then: 'true', else: 'false')}">
+                                <td class="neos-priority1"></td>
+                                <td id="change-{change.node.identifier}" {f:render(partial: 'Module/Management/Workspaces/ContentChangeAttributes', arguments: {change: change})} data-neos-toggle="tooltip" data-placement="left" data-container="body">
+                                <f:render partial="Module/Management/Workspaces/ContentChangeDiff" arguments="{change: change, contentDimensions: contentDimensions}"/>
+                                </td>
+                                <td class="neos-action"></td>
+                            </tr>
+                        </f:for>
+                    </f:for>
+                </f:for>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="neos-row-fluid neos-module-container">
+            <fieldset class="neos-span5">
+                <div class="neos-control-group">
+                    <label class="neos-control-label" for="reasoning">Begründung der Entscheidung (optional)</label>
+                    <div class="neos-controls">
+                        <f:form.textarea
+                                property="reasoning"
+                                id="reasoning"
+                                rows="5"
+                                style="width:100%"
+                        />
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
+        <f:render section="actions" arguments="{_all}" />
+    </f:form>
+
+    <f:form id="rejectionForm" action="resolve" object="{publication}" objectName="publication">
+        <f:form.hidden name="action" value="reject" />
+    </f:form>
+
+    <div class="neos-footer">
+        <f:link.action action="index" class="neos-button">Zurück</f:link.action>
+        <div class="neos-pull-right">
+            <button type="submit" class="neos-button neos-button-danger" form="rejectionForm">Änderungen ablehnen</button>
+            <button type="submit" class="neos-button neos-button-success" form="publicationForm">Alle Änderungen veröffentlichen</button>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            jQuery(function($) {
+                jQuery('.fold-toggle').click(function() {
+                    jQuery(this).toggleClass('fas fa-chevron-down fas fa-chevron-up');
+                    jQuery('tr.' + jQuery(this).data('toggle')).toggle();
+                });
+            });
+        });
+    </script>
+</f:section>
+
+<f:section name="actions"></f:section>

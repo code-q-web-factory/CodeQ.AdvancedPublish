@@ -1,0 +1,11 @@
+<p>Hallo {publication.editor.name.firstName},</p>
+
+<p>Der Benutzer &raquo;{publication.reviewer.name.fullName}&laquo; hat deine Änderungen abgelehnt. Du kannst die Inhalte nun überarbeiten und erneut zur Freigabe vorlegen.</p>
+
+<f:if condition="{publication.reasoning}">
+    <p>Folgende Begründung wurde übermittelt:</p>
+    <blockquote>
+        {publication.reasoning}
+    </blockquote>
+</f:if>
+

@@ -1,0 +1,152 @@
+{namespace neos=Neos\Neos\ViewHelpers}
+<f:layout name="BackendSubModule" />
+
+<f:section name="content">
+    <f:if condition="{avoidPrinting}">
+        <style>
+            @media print {
+                body {
+                    display: none;
+                }
+            }
+        </style>
+    </f:if>
+    <f:if condition="{avoidCopying}">
+        <style>
+            body {
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+        </style>
+    </f:if>
+    <style>
+        .neos-content-diff td {
+            word-break: break-all;
+        }
+    </style>
+    <script>document.body.classList.add('neos-module-management-workspaces')</script>
+
+    <legend>
+        <f:if condition="{publication.status} == 'pending'">Änderungen von &raquo;{f:render(partial: 'UserName', arguments: {user: publication.editor})}&laquo; am {publication.created -> f:format.date(format: 'd.m.Y H:i')}</f:if>
+        <f:if condition="{publication.status} == 'withdrawn'">Änderungen von &raquo;{f:render(partial: 'UserName', arguments: {user: publication.editor})}&laquo; am {publication.created -> f:format.date(format: 'd.m.Y H:i')}, zurückgezogen am {publication.created -> f:format.date(format: 'd.m.Y H:i')}</f:if>
+        <f:if condition="{publication.status} == 'approved'">Änderungen von &raquo;{f:render(partial: 'UserName', arguments: {user: publication.editor})}&laquo; am {publication.created -> f:format.date(format: 'd.m.Y H:i')}, freigegeben von  &raquo;{f:render(partial: 'UserName', arguments: {user: publication.reviewer})}&laquo; am {publication.created -> f:format.date(format: 'd.m.Y H:i')}</f:if>
+        <f:if condition="{publication.status} == 'declined'">Änderungen von &raquo;{f:render(partial: 'UserName', arguments: {user: publication.editor})}&laquo; am {publication.created -> f:format.date(format: 'd.m.Y H:i')}, abgelehnt von  &raquo;{f:render(partial: 'UserName', arguments: {user: publication.reviewer})}&laquo; am {publication.created -> f:format.date(format: 'd.m.Y H:i')}</f:if>
+    </legend>
+    <br />
+    <div class="neos-row-fluid neos-module-container">
+        <f:if condition="{publication.comment}">
+            <fieldset class="neos-span6">
+                <h2>Kommentar des Autors</h2>
+                <br />
+                <p>{publication.comment}</p>
+            </fieldset>
+        </f:if>
+
+        <f:if condition="{publication.reasoning}">
+            <fieldset class="neos-span6">
+                <h2>Begründung des Reviewers</h2>
+                <br />
+                <p>{publication.reasoning}</p>
+            </fieldset>
+        </f:if>
+    </div>
+
+    <f:if condition="{publication.revision}">
+        Es wurde eine Revision von &raquo;{publication.revision.creator}&laquo; vom &raquo;{publication.revision.creationDateTime -> f:format.date(format: 'd.m.Y H:i')}&laquo; auf die Seite &raquo;{revisionPageTitle}&laquo; angewendet.
+    </f:if>
+
+    <f:if condition="{siteChanges}">
+        <f:then>
+            <br />
+            <div class="neos-row-fluid">
+                <table class="neos-table">
+                    <tbody>
+                    <f:for each="{siteChanges}" as="site">
+                        <f:for each="{site.documents}" key="documentPath" as="document">
+                            <tr class="neos-document" data-nodepath="{document.documentNode.path}" data-ismoved="{f:if(condition: document.isMoved, then: 'true', else: 'false')}" data-isnew="{f:if(condition: document.isNew, then: 'true', else: 'false')}">
+                                <td colspan="2" class="neos-priority1 path-caption">
+                                    <div class="neos-row-fluid">
+                                        <div class="neos-span2">
+                                            {neos:backend.translate(id: 'pathCaption', source: 'Main', package: 'Neos.Neos')}:
+                                            <f:for each="{document.documentNode.breadcrumbs}" as="documentNode" iteration="{iterator}">/
+                                                <f:if condition="{showIcon}">
+                                                    <f:if condition="{documentNode.nodeType.ui.icon}">
+                                                        <i class="{documentNode.nodeType.ui.icon}"
+                                                           title="{documentNode.nodeType.label}"
+                                                           data-neos-toggle="tooltip"></i></f:if>
+                                                </f:if>
+                                                {documentNode.label}
+                                            </f:for>
+                                        </div>
+
+                                        <div class="neos-span2 neos-pull-right neos-aRight"></div>
+                                    </div>
+                                </td>
+                                <td class="neos-action neos-folder">
+                                    <i class="fold-toggle fas fa-chevron-up icon-white" data-toggle="fold-{document.documentNode.identifier}"></i>
+                                </td>
+                            </tr>
+                            <f:for each="{document.changes}" key="relativePath" as="change">
+                                <tr class="neos-change fold-{document.documentNode.identifier} document-{document.documentNode.identifier}" data-nodepath="{change.node.path}" data-ismoved="{f:if(condition: change.isMoved, then: 'true', else: 'false')}" data-isnew="{f:if(condition: change.isNew, then: 'true', else: 'false')}">
+                                    <td class="neos-priority1"></td>
+                                    <td id="change-{change.node.identifier}" {f:render(partial: 'Module/Management/Workspaces/ContentChangeAttributes', arguments: {change: change})} data-neos-toggle="tooltip" data-placement="left" data-container="body">
+                                    <f:render partial="Module/Management/Workspaces/ContentChangeDiff" arguments="{change: change, contentDimensions: contentDimensions}"/>
+                                    </td>
+                                    <td class="neos-action"></td>
+                                </tr>
+                            </f:for>
+                        </f:for>
+                    </f:for>
+                    </tbody>
+                </table>
+            </div>
+            <f:render section="actions" arguments="{_all}" />
+
+            <div class="neos-hide" id="discard">
+                <div class="neos-modal-centered">
+                    <div class="neos-modal-content">
+                        <div class="neos-modal-header">
+                            <button type="button" class="neos-close neos-button" data-dismiss="modal"></button>
+                            <div class="neos-header">{neos:backend.translate(id: 'workspaces.discardAllChangesInWorkspaceConfirmation', arguments: {0: selectedWorkspaceLabel}, source: 'Modules', package: 'Neos.Neos')}</div>
+                        </div>
+                        <div class="neos-modal-footer">
+                            <a href="#" class="neos-button" data-dismiss="modal">{neos:backend.translate(id: 'cancel', source: 'Main', package: 'Neos.Neos')}</a>
+                            <button form="postHelper" formaction="{f:uri.action(action: 'discardWorkspace', arguments: {workspace: selectedWorkspace})}" type="submit" class="neos-button neos-button-danger">
+                                <i class="fas fa-trash-alt icon-white"></i>
+                                {neos:backend.translate(id: 'workspaces.discardAllChanges', source: 'Modules', package: 'Neos.Neos')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="neos-modal-backdrop neos-in"></div>
+            </div>
+        </f:then>
+    </f:if>
+
+    <div class="neos-footer">
+        <f:link.action action="index" class="neos-button">Zurück</f:link.action>
+        <f:if condition="{publication.isWithdrawable}">
+            <button form="postHelper" formaction="{f:uri.action(action: 'withdraw', arguments: {publication: publication})}" type="submit" class="neos-button neos-button-warning">
+                <i class="fas fa-trash-alt icon-white"></i>
+                Veröffentlichung zurückziehen
+            </button>
+        </f:if>
+    </div>
+
+    <f:form action="index" id="postHelper" method="post"></f:form>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            jQuery(function($) {
+                jQuery('.fold-toggle').click(function() {
+                    jQuery(this).toggleClass('fas fa-chevron-down fas fa-chevron-up');
+                    jQuery('tr.' + jQuery(this).data('toggle')).toggle();
+                });
+            });
+        });
+    </script>
+</f:section>
+
+<f:section name="actions"></f:section>
