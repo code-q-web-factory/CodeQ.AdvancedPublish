@@ -1,0 +1,11 @@
+Neos:
+  Neos:
+    Ui:
+      resources:
+        javascript:
+          'CodeQ.AdvancedPublish':
+            resource: resource://CodeQ.AdvancedPublish/Public/NeosUserInterface/Plugin.js
+
+      frontendConfiguration:
+        'CodeQ.AdvancedPublish':
+          iframeUri: 'https://example.com'
