@@ -90,6 +90,7 @@ class PublicationBackendModuleController extends AbstractModuleController
         $this->view->assignMultiple([
             'publications' => $publications,
             'filter' => $filter,
+            'publicationWorkspace' => $this->userService->findPublicWorkspaceForCurrentUser()
         ]);
     }
 
