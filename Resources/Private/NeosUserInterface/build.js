@@ -1,12 +1,23 @@
-require("esbuild").build({
+const esbuild = require('esbuild');
+const isWatch = process.argv.includes('--watch');
+
+/** @type {import("esbuild").BuildOptions} */
+const options = {
 	logLevel: "info",
 	bundle: true,
-	watch: process.argv.includes("--watch"),
+	minify: true,
 	target: "es2020",
+	sourcemap: 'linked',
 	entryPoints: {"Plugin": "src/index.js"},
 	loader: {
 		".js": "tsx",
 	},
+	alias: require("@neos-project/neos-ui-extensibility/extensibilityMap.json"),
 	outdir: "../../Public/NeosUserInterface",
-	plugins: [require("@mhsdesign/esbuild-neos-ui-extensibility").neosUiExtensibility()]
-})
+}
+
+if (isWatch) {
+	esbuild.context(options).then((ctx) => ctx.watch())
+} else {
+	esbuild.build(options)
+}

@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@mhsdesign/esbuild-neos-ui-extensibility": "^0.2.1",
-    "esbuild": "^0.16.16"
+    "@neos-project/neos-ui-extensibility": "8.3.0-beta3",
+    "esbuild": "^0.17.00"
   }
 }
