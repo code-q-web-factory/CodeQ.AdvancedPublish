@@ -8,4 +8,4 @@ Neos:
 
       frontendConfiguration:
         'CodeQ.AdvancedPublish':
-          iframeUri: '/neos/management/publications?moduleArguments[@package]=codeq.advancedpublish&moduleArguments[@controller]=publicationbackendmodule&moduleArguments[@action]=new&moduleArguments[@format]=html&moduleArguments[@subpackage]='
+          iframeUri: '/neos/advancedpublish/new?inEmbedMode=true'

@@ -15,25 +15,20 @@ use Neos\ContentRepository\Domain\Model\NodeData;
 use Neos\ContentRepository\Domain\Repository\NodeDataRepository;
 use Neos\ContentRepository\Domain\Repository\WorkspaceRepository;
 use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Mvc\Controller\ActionController;
 use Neos\Flow\Mvc\Exception\StopActionException;
 use Neos\Flow\Persistence\Exception\IllegalObjectTypeException;
 use Neos\Neos\Controller\Module\AbstractModuleController;
 use Neos\Neos\Domain\Model\User;
 use Neos\Neos\Domain\Repository\UserRepository;
 
-class PublicationBackendModuleController extends AbstractModuleController
+class PublicationBackendModuleController extends ActionController
 {
     /**
      * @Flow\InjectConfiguration
      * @var array
      */
     protected $settings;
-
-    /**
-     * @Flow\Inject
-     * @var UserRepository
-     */
-    protected $userRepository;
 
     /**
      * @Flow\Inject
@@ -97,7 +92,7 @@ class PublicationBackendModuleController extends AbstractModuleController
     /**
      * @return void
      */
-    public function newAction(): void
+    public function newAction(bool $inEmbedMode = false): void
     {
         $authorizedReviewers = $this->userService->getAuthorizedReviewers();
         $currentUser = $this->userService->getCurrentlyAuthenticatedUser();
@@ -113,6 +108,7 @@ class PublicationBackendModuleController extends AbstractModuleController
             'userHasNoPendingPublications' => $userHasNoPendingPublications,
             'currentUser' => $this->userService->getCurrentlyAuthenticatedUser(),
             'pendingPublication' => $this->publicationRepository->findPendingByEditor($currentUser)->getFirst(),
+            'inEmbedMode' => $inEmbedMode
         ]);
     }
 
@@ -124,10 +120,12 @@ class PublicationBackendModuleController extends AbstractModuleController
      * @Flow\Validate(argumentName="reviewer", type="NotEmpty")
      * @throws StopActionException
      */
-    public function createAction(User $reviewer, string $comment = null)
+    public function createAction(User $reviewer, string $comment = null, bool $inEmbedMode = false)
     {
         $this->publicationService->create($reviewer, $comment);
-        $this->redirect('index');
+        if ($inEmbedMode === false) {
+            $this->redirect('index');
+        }
     }
 
     /**
@@ -163,7 +161,7 @@ class PublicationBackendModuleController extends AbstractModuleController
      * @return void
      * @throws \Neos\ContentRepository\Exception\NodeException
      */
-    public function showAction(Publication $publication): void
+    public function showAction(Publication $publication, bool $inEmbedMode = false): void
     {
         if ($publication->getStatus() === 'pending') {
             $siteChanges = $this->workspaceService->computeSiteChanges($publication->getWorkspace());
@@ -190,6 +188,7 @@ class PublicationBackendModuleController extends AbstractModuleController
             'avoidPrinting' => $this->settings['protocol']['avoidPrinting'],
             'avoidCopying' => $this->settings['protocol']['avoidCopying'],
             'revisionPageTitle' => $revisionPageTitle,
+            'inEmbedMode' => $inEmbedMode
         ]);
     }
 
@@ -199,11 +198,11 @@ class PublicationBackendModuleController extends AbstractModuleController
      * @throws StopActionException
      * @throws IllegalObjectTypeException
      */
-    public function withdrawAction(Publication $publication): void
+    public function withdrawAction(Publication $publication, string $redirectToAction = 'index', bool $inEmbedMode = false): void
     {
         $this->publicationService->withdraw($publication);
         // todo flash message
-        $this->redirect('index');
+        $this->redirect($redirectToAction, null, null, ['inEmbedMode' => $inEmbedMode]);
     }
 
     /**
@@ -222,10 +221,12 @@ class PublicationBackendModuleController extends AbstractModuleController
      * @param  string|null  $comment
      * @return void
      */
-    public function createAndApproveAction(User $reviewer, string $comment = null): void
+    public function createAndApproveAction(User $reviewer, string $comment = null, bool $inEmbedMode = false): void
     {
         $publication = $this->publicationService->create($reviewer, $comment);
         $this->publicationService->publishAndClose($publication);
-        $this->redirect('index');
+        if ($inEmbedMode === false) {
+            $this->redirect('index');
+        }
     }
 }

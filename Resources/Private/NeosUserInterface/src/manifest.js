@@ -18,7 +18,11 @@ const Modal = (({iframeUri}) => {
 		if (!iframeWindow) {
 			return;
 		}
-		iframeWindow.exit = () => dispatch(actions.toggleAdvancedPublishDialog());
+        window.addEventListener('message', (event) => {
+            if (event.data === 'closePublicationPopup') {
+                dispatch(actions.toggleAdvancedPublishDialog({open: false}));
+            }
+        })
 	}, [])
 
 	if (!isOpen) {
