@@ -1,16 +1,19 @@
-/* eslint-disable complexity */
+/**
+ * copied from the neos ui and adjusted: packages/neos-ui/src/Containers/PrimaryToolbar/PublishDropDown/index.js
+ */
+
 import React, {Fragment, PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import mergeClassNames from 'classnames';
 
-import {DropDown, Label, CheckBox, Icon, Badge} from '@neos-project/react-ui-components';
+import {DropDown, Icon, Badge} from '@neos-project/react-ui-components';
 
 import I18n from '@neos-project/neos-ui-i18n';
 import {actions, selectors} from '@neos-project/neos-ui-redux-store';
 import {neos} from '@neos-project/neos-ui-decorators';
 
-const {publishableNodesSelector, publishableNodesInDocumentSelector, baseWorkspaceSelector, isWorkspaceReadOnlySelector, personalWorkspaceNameSelector} = selectors.CR.Workspaces;
+const {publishableNodesSelector, publishableNodesInDocumentSelector, baseWorkspaceSelector, isWorkspaceReadOnlySelector} = selectors.CR.Workspaces;
 
 import AbstractButton from './AbstractButton/index';
 import style from './style.module.css';
@@ -21,13 +24,9 @@ import style from './style.module.css';
     isDiscarding: state?.ui?.remote?.isDiscarding,
     publishableNodes: publishableNodesSelector(state),
     publishableNodesInDocument: publishableNodesInDocumentSelector(state),
-    personalWorkspaceName: personalWorkspaceNameSelector(state),
     baseWorkspace: baseWorkspaceSelector(state),
     isWorkspaceReadOnly: isWorkspaceReadOnlySelector(state),
-    isAutoPublishingEnabled: state?.user?.settings?.isAutoPublishingEnabled
 }), {
-    toggleAutoPublishing: actions.User.Settings.toggleAutoPublishing,
-    changeBaseWorkspaceAction: actions.CR.Workspaces.changeBaseWorkspace,
     publishAction: actions.CR.Workspaces.publish,
     discardAction: actions.CR.Workspaces.commenceDiscard
 })
@@ -43,23 +42,11 @@ export default class PublishDropDown extends PureComponent {
         isWorkspaceReadOnly: PropTypes.bool,
         publishableNodes: PropTypes.array,
         publishableNodesInDocument: PropTypes.array,
-        personalWorkspaceName: PropTypes.string.isRequired,
         baseWorkspace: PropTypes.string.isRequired,
-        neos: PropTypes.object.isRequired,
-        isAutoPublishingEnabled: PropTypes.bool,
-        toggleAutoPublishing: PropTypes.func.isRequired,
         publishAction: PropTypes.func.isRequired,
         discardAction: PropTypes.func.isRequired,
-        changeBaseWorkspaceAction: PropTypes.func.isRequired,
-        routes: PropTypes.object,
         i18nRegistry: PropTypes.object.isRequired
     };
-
-    handlePublishClick = () => {
-        const {publishableNodesInDocument, publishAction, baseWorkspace} = this.props;
-
-        publishAction(publishableNodesInDocument.map(node => node?.contextPath), baseWorkspace);
-    }
 
     handlePublishAllClick = () => {
         const {publishableNodes, publishAction, baseWorkspace} = this.props;
@@ -86,25 +73,12 @@ export default class PublishDropDown extends PureComponent {
             isSaving,
             isPublishing,
             isDiscarding,
-            isAutoPublishingEnabled,
             isWorkspaceReadOnly,
-            toggleAutoPublishing,
-            baseWorkspace,
-            changeBaseWorkspaceAction,
             i18nRegistry,
-            neos
         } = this.props;
 
-        const workspaceModuleUri = neos?.routes?.core?.modules?.workspaces;
-        const allowedWorkspaces = neos?.configuration?.allowedTargetWorkspaces;
-        const baseWorkspaceTitle = allowedWorkspaces?.[baseWorkspace]?.title;
         const canPublishLocally = !isSaving && !isPublishing && !isDiscarding && publishableNodesInDocument && (publishableNodesInDocument.length > 0);
         const canPublishGlobally = !isSaving && !isPublishing && !isDiscarding && publishableNodes && (publishableNodes.length > 0);
-        const changingWorkspaceAllowed = !canPublishGlobally;
-        const autoPublishWrapperClassNames = mergeClassNames({
-            [style.dropDown__item]: true,
-            [style['dropDown__item--noHover']]: true
-        });
         const mainButton = this.getTranslatedMainButton();
         const dropDownBtnClassName = mergeClassNames({
             [style.dropDown__btn]: true,
