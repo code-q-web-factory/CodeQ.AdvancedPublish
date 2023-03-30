@@ -8,6 +8,8 @@ import {actionTypes} from '@neos-project/neos-ui-redux-store';
 import {actions, reducer, selectors} from "./actions"
 import {useSelector, useDispatch} from 'react-redux';
 
+import PublishDropDown from './neos-ui/PublishDropDown'
+
 const Modal = (({iframeUri}) => {
 	const isOpen = useSelector(selectors.advancedPublishDialogOpen);
 	const iframeRef = React.useRef(null);
@@ -63,4 +65,6 @@ manifest("CodeQ.AdvancedPublish", {}, (globalRegistry, {frontendConfiguration}) 
 	));
 	globalRegistry.get('sagas').set('CodeQ.AdvancedPublish/afterPublish', { saga: afterPublish });
 	globalRegistry.get('reducers').set('CodeQ.AdvancedPublish', { reducer });
+
+	globalRegistry.get('containers').set('PrimaryToolbar/Right/PublishDropDown', PublishDropDown);
 });

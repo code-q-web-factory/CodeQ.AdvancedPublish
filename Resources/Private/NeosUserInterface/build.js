@@ -1,5 +1,6 @@
 const esbuild = require('esbuild');
 const isWatch = process.argv.includes('--watch');
+const {cssModules} = require("esbuild-plugin-lightningcss-modules");
 
 /** @type {import("esbuild").BuildOptions} */
 const options = {
@@ -14,6 +15,17 @@ const options = {
 	},
 	alias: require("@neos-project/neos-ui-extensibility/extensibilityMap.json"),
 	outdir: "../../Public/NeosUserInterface",
+	plugins: [
+		cssModules({
+			cssModulesPattern: `codeq-[hash]_[local]`,
+			targets: {
+				chrome: 80
+			},
+			drafts: {
+				nesting: true,
+			}
+		})
+	]
 }
 
 if (isWatch) {
