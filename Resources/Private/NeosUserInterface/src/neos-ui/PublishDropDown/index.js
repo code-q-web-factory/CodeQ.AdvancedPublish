@@ -13,7 +13,6 @@ import {neos} from '@neos-project/neos-ui-decorators';
 const {publishableNodesSelector, publishableNodesInDocumentSelector, baseWorkspaceSelector, isWorkspaceReadOnlySelector, personalWorkspaceNameSelector} = selectors.CR.Workspaces;
 
 import AbstractButton from './AbstractButton/index';
-import WorkspaceSelector from './WorkspaceSelector/index';
 import style from './style.module.css';
 
 @connect(state => ({
@@ -106,7 +105,7 @@ export default class PublishDropDown extends PureComponent {
             [style.dropDown__item]: true,
             [style['dropDown__item--noHover']]: true
         });
-        const mainButton = this.getTranslatedMainButton(baseWorkspaceTitle);
+        const mainButton = this.getTranslatedMainButton();
         const dropDownBtnClassName = mergeClassNames({
             [style.dropDown__btn]: true,
             [style['dropDown__item--canPublish']]: canPublishGlobally,
@@ -121,12 +120,12 @@ export default class PublishDropDown extends PureComponent {
                 <AbstractButton
                     id="neos-PublishDropDown-Publish"
                     className={style.publishBtn}
-                    isEnabled={!isWorkspaceReadOnly && (canPublishLocally)}
-                    isHighlighted={canPublishLocally || isSaving || isPublishing}
-                    onClick={this.handlePublishClick}
+                    isEnabled={!isWorkspaceReadOnly && (canPublishGlobally)}
+                    isHighlighted={canPublishGlobally || isSaving || isPublishing}
+                    onClick={this.handlePublishAllClick}
                     >
                     {mainButton} {isWorkspaceReadOnly ? (<Icon icon="lock"/>) : ''}
-                    {publishableNodesInDocumentCount > 0 && <Badge className={style.badge} label={String(publishableNodesInDocumentCount)}/>}
+                    {publishableNodesCount > 0 && <Badge className={style.badge} label={String(publishableNodesCount)}/>}
                 </AbstractButton>
 
                 <DropDown className={style.dropDown}>
@@ -148,28 +147,6 @@ export default class PublishDropDown extends PureComponent {
                     <DropDown.Contents
                         className={style.dropDown__contents}
                         >
-                        { Object.keys(allowedWorkspaces).length > 1 && <li className={style.dropDown__item}>
-                            <WorkspaceSelector
-                                baseWorkspace={baseWorkspace}
-                                allowedWorkspaces={allowedWorkspaces}
-                                changeBaseWorkspaceAction={changeBaseWorkspaceAction}
-                                changingWorkspaceAllowed={changingWorkspaceAllowed}
-                                />
-                        </li> }
-                        <li className={style.dropDown__item}>
-                            <AbstractButton
-                                id="neos-PublishDropDown-PublishAll"
-                                isEnabled={!isWorkspaceReadOnly && canPublishGlobally}
-                                isHighlighted={false}
-                                onClick={this.handlePublishAllClick}
-                                >
-                                <div className={style.dropDown__iconWrapper}>
-                                    <Icon icon="check-double"/>
-                                </div>
-                                <I18n id="Neos.Neos:Main:publishAll" fallback="Publish All"/>
-                                {publishableNodesCount > 0 && <Badge className={style.badge} label={String(publishableNodesCount)}/>}
-                            </AbstractButton>
-                        </li>
                         <li className={style.dropDown__item}>
                             <AbstractButton
                                 id="neos-PublishDropDown-Discard"
@@ -200,86 +177,40 @@ export default class PublishDropDown extends PureComponent {
                                 {publishableNodesCount > 0 && <Badge className={style.badge} label={String(publishableNodesCount)}/>}
                             </AbstractButton>
                         </li>
-                        {publishableNodesCount > 0 && (<li className={style.dropDown__item}>
-                            <a id="neos-PublishDropDown-ReviewChanges" href={workspaceModuleUri + '/show?moduleArguments[workspace]=' + this.props.personalWorkspaceName}>
-                                <div className={style.dropDown__iconWrapper}>
-                                    <Icon icon="check-circle"/>
-                                </div>
-                                <I18n id="Neos.Neos:Main:reviewChanges" fallback="Review changes"/>
-                            </a>
-                        </li>)}
-                        <li className={autoPublishWrapperClassNames}>
-                            {
-                                /**
-                                PLEASE NOTE: this additional styleClass is a fix, because react checkboxes inside a react select component are buggy,
-                                for further information see https://github.com/neos/neos-ui/pull/3211
-                                */
-                            }
-                            <Label htmlFor="neos-PublishDropDown-AutoPublish" className={style.dropdownOptionCheckbox}>
-                                <
-// @ts-ignore
-                                CheckBox
-                                    id="neos-PublishDropDown-AutoPublish"
-                                    onChange={toggleAutoPublishing}
-                                    isChecked={isAutoPublishingEnabled}
-                                    className={style.dropdownOptionCheckbox__input}
-                                    />
-                                <span className={style.dropdownOptionCheckbox__label}>
-                                    <I18n id="Neos.Neos:Main:autoPublish" fallback="Auto-Publish"/>
-                                </span>
-                            </Label>
-                        </li>
-                        <li className={style.dropDown__item}>
-                            <a id="neos-PublishDropDown-Workspaces" href={workspaceModuleUri}>
-                                <div className={style.dropDown__iconWrapper}>
-                                    <Icon icon="th-large"/>
-                                </div>
-                                <I18n id="Neos.Neos:Main:workspaces" fallback="Workspaces"/>
-                            </a>
-                        </li>
                     </DropDown.Contents>
                 </DropDown>
             </div>
         );
     }
 
-    getTranslatedMainButton(baseWorkspaceTitle = '') {
+    getTranslatedMainButton() {
         const {
-            publishableNodesInDocument,
+						publishableNodes,
             isSaving,
             isPublishing,
             isDiscarding,
-            isAutoPublishingEnabled
         } = this.props;
-        const canPublishLocally = publishableNodesInDocument && (publishableNodesInDocument.length > 0);
+        const canPublish = publishableNodes && (publishableNodes.length > 0);
 
         if (isSaving) {
             return <I18n id="Neos.Neos:Main:saving" fallback="saving"/>;
         }
 
         if (isPublishing) {
-            return <I18n id="Neos.Neos:Main:publishTo" fallback="Publish to" params={{0: baseWorkspaceTitle}}/>;
+            return <I18n id="Neos.Neos:Main:publishTo" fallback="Publish to" params={{0: "..."}}/>;
         }
 
         if (isDiscarding) {
             return 'Discarding...';
         }
 
-        if (isAutoPublishingEnabled) {
-            if (baseWorkspaceTitle) {
-                return <I18n id="Neos.Neos:Main:autoPublishTo" fallback={'Auto publish to ' + baseWorkspaceTitle} params={{0: baseWorkspaceTitle}}/>;
-            }
-            return <I18n id="Neos.Neos:Main:autoPublish" fallback="Auto publish"/>;
-        }
-
-        if (canPublishLocally) {
-            return <I18n id="Neos.Neos:Main:publishTo" fallback="Publish to" params={{0: baseWorkspaceTitle}}/>;
+        if (canPublish) {
+						return <I18n id="Neos.Neos:Main:publishAll" fallback="Publish All"/>
         }
 
         return (
             <Fragment>
                 <I18n id="Neos.Neos:Main:published" fallback="Published"/>
-                {(baseWorkspaceTitle ? ' - ' + baseWorkspaceTitle : '')}
             </Fragment>
         );
     }
