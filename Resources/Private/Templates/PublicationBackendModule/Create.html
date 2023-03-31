@@ -1,11 +1,20 @@
 <f:layout name="BackendSubModule" />
 
 <f:section name="content">
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            exit()
-        })
-    </script>
+    <legend>Veröffentlichung erstellt</legend>
+    <div class="neos-module-container">
+        <p>Deine Veröffentlichung wurde erfolgreich erstellt und dem Reviewer zur Überprüfung vorgelegt.</p>
+    </div>
+    <div class="neos-footer">
+        <f:if condition="{inEmbedMode}">
+            <f:then>
+                <button class="neos-button neos-button-success" onclick="exit()" type="button">Abschließen</button>
+            </f:then>
+            <f:else>
+                <f:link.action action="index" class="neos-button neos-button-success">Abschließen</f:link.action>
+            </f:else>
+        </f:if>
+    </div>
     <script src="{f:uri.resource(path: 'JavaScript/Main.min.js', package: 'Neos.Neos')}"></script>
     <script src="{f:uri.resource(path: 'JavaScript/Index.js', package: 'CodeQ.AdvancedPublish')}"></script>
 </f:section>

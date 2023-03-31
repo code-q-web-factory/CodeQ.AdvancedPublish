@@ -125,6 +125,8 @@ class PublicationBackendModuleController extends ActionController
         $this->publicationService->create($reviewer, $comment);
         if ($inEmbedMode === false) {
             $this->redirect('index');
+        } else {
+            $this->view->assign('inEmbedMode', $inEmbedMode);
         }
     }
 
@@ -227,6 +229,8 @@ class PublicationBackendModuleController extends ActionController
         $this->publicationService->publishAndClose($publication);
         if ($inEmbedMode === false) {
             $this->redirect('index');
+        } else {
+            $this->view->assign('inEmbedMode', $inEmbedMode);
         }
     }
 }
