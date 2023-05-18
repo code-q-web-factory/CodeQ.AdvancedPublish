@@ -48,6 +48,10 @@ const Modal = (({iframeUri}) => {
 })
 
 manifest("CodeQ.AdvancedPublish", {}, (globalRegistry, {frontendConfiguration}) => {
+  if (!frontendConfiguration["CodeQ.AdvancedPublish"].enabled) {
+    return
+  }
+
 	function* afterPublish() {
 		yield takeLatest(actionTypes.CR.Workspaces.PUBLISH, function* () {
 			const {payload} = yield take(actionTypes.ServerFeedback.HANDLE_SERVER_FEEDBACK)

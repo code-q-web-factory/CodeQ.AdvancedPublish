@@ -11,4 +11,5 @@ Neos:
 
       frontendConfiguration:
         'CodeQ.AdvancedPublish':
+          enabled: '${Configuration.setting("CodeQ.AdvancedPublish.enabled")}'
           iframeUri: '/neos/advancedpublish/new?inEmbedMode=true'
