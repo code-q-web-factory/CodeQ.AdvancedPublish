@@ -95,16 +95,8 @@
         </div>
     </div>
 
-    <script>
-        window.addEventListener('DOMContentLoaded', (event) => {
-            jQuery(function($) {
-                jQuery('.fold-toggle').click(function() {
-                    jQuery(this).toggleClass('fas fa-chevron-down fas fa-chevron-up');
-                    jQuery('tr.' + jQuery(this).data('toggle')).toggle();
-                });
-            });
-        });
-    </script>
+    <script src="{f:uri.resource(path: 'JavaScript/Main.min.js', package: 'Neos.Neos')}"></script>
+    <script src="{f:uri.resource(path: 'JavaScript/Index.js', package: 'CodeQ.AdvancedPublish')}"></script>
 </f:section>
 
 <f:section name="actions"></f:section>

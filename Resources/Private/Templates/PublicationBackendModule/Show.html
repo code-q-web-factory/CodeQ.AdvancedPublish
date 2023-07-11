@@ -26,7 +26,6 @@
             word-break: break-all;
         }
     </style>
-    <script>document.body.classList.add('neos-module-management-workspaces')</script>
 
     <legend>
         <f:if condition="{publication.status} == 'pending'">Änderungen von &raquo;{f:render(partial: 'UserName', arguments: {user: publication.editor})}&laquo; am {publication.created -> f:format.date(format: 'd.m.Y H:i')}</f:if>
@@ -126,7 +125,14 @@
     </f:if>
 
     <div class="neos-footer">
-        <f:link.action action="index" class="neos-button">Zurück</f:link.action>
+        <f:if condition="{inEmbedMode}">
+            <f:then>
+                <button class="neos-button" onclick="exit()" type="button">Zurück</button>
+            </f:then>
+            <f:else>
+                <f:link.action action="index" class="neos-button">Zurück</f:link.action>
+            </f:else>
+        </f:if>
         <f:if condition="{publication.isWithdrawable}">
             <button form="postHelper" formaction="{f:uri.action(action: 'withdraw', arguments: {publication: publication})}" type="submit" class="neos-button neos-button-warning">
                 <i class="fas fa-trash-alt icon-white"></i>
@@ -135,18 +141,13 @@
         </f:if>
     </div>
 
-    <f:form action="index" id="postHelper" method="post"></f:form>
+    <f:form action="index" id="postHelper" method="post">
+        <f:form.hidden name="inEmbedMode" value="{inEmbedMode}" />
+        <f:form.hidden name="redirectToAction" value="{f:if(condition: inEmbedMode, then: 'new', else: 'index')}" />
+    </f:form>
 
-    <script>
-        window.addEventListener('DOMContentLoaded', (event) => {
-            jQuery(function($) {
-                jQuery('.fold-toggle').click(function() {
-                    jQuery(this).toggleClass('fas fa-chevron-down fas fa-chevron-up');
-                    jQuery('tr.' + jQuery(this).data('toggle')).toggle();
-                });
-            });
-        });
-    </script>
+    <script src="{f:uri.resource(path: 'JavaScript/Main.min.js', package: 'Neos.Neos')}"></script>
+    <script src="{f:uri.resource(path: 'JavaScript/Index.js', package: 'CodeQ.AdvancedPublish')}"></script>
 </f:section>
 
 <f:section name="actions"></f:section>

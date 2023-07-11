@@ -1,0 +1,15 @@
+Neos:
+  Neos:
+    Ui:
+      resources:
+        javascript:
+          'CodeQ.AdvancedPublish':
+            resource: resource://CodeQ.AdvancedPublish/Public/NeosUserInterface/Plugin.js
+        stylesheets:
+          'CodeQ.AdvancedPublish':
+            resource: resource://CodeQ.AdvancedPublish/Public/NeosUserInterface/Plugin.css
+
+      frontendConfiguration:
+        'CodeQ.AdvancedPublish':
+          enabled: '${Configuration.setting("CodeQ.AdvancedPublish.enabled")}'
+          iframeUri: '/neos/advancedpublish/new?inEmbedMode=true'

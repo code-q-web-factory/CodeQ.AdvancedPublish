@@ -9,3 +9,16 @@ Neos:
             description: 'i18n'
             icon: 'icon-star'
             mainStylesheet: 'Lite'
+  Flow:
+    mvc:
+      routes:
+        'CodeQ.AdvancedPublish': true
+    security:
+      authentication:
+        providers:
+          'Neos.Neos:Backend':
+            requestPatterns:
+              'CodeQ.AdvancedPublish:Controllers':
+                pattern: 'ControllerObjectName'
+                patternOptions:
+                  controllerObjectNamePattern: 'CodeQ\AdvancedPublish\Controller\.*'

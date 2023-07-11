@@ -7,3 +7,12 @@
     partialRootPaths:
       - 'resource://CodeQ.AdvancedPublish/Private/Partials'
       - 'resource://Neos.Neos/Private/Partials'
+
+-
+  requestFilter: 'mainRequest.isPackage("CodeQ.AdvancedPublish")'
+  viewObjectName: Neos\FluidAdaptor\View\TemplateView
+  options:
+    layoutPathAndFilename: 'resource://CodeQ.AdvancedPublish/Private/Layouts/Default.html'
+    partialRootPaths:
+      - 'resource://CodeQ.AdvancedPublish/Private/Partials'
+      - 'resource://Neos.Neos/Private/Partials'

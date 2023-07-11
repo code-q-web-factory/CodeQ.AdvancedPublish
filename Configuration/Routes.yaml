@@ -1,0 +1,9 @@
+-
+  name: 'Publications'
+  uriPattern: 'neos/advancedpublish/{@action}'
+  defaults:
+    '@package':    'CodeQ.AdvancedPublish'
+    '@controller': 'PublicationBackendModule'
+    '@action':     'index'
+    '@format':     'html'
+  appendExceedingArguments: true

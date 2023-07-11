@@ -1,0 +1,16 @@
+{namespace neos=Neos\Neos\ViewHelpers}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><neos:backend.translate id="{title}" /></title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="{f:uri.resource(package: 'Neos.Neos', path: 'Styles/Lite.css')}?bust={neos:backend.cssBuiltVersion()}" />
+        <link rel="stylesheet" type="text/css" href="{f:uri.resource(package: 'CodeQ.AdvancedPublish', path: 'Styles/Index.css')}" />
+        <link rel="neos-xliff" href="{f:uri.action(action: 'xliffAsJson', arguments: {locale: '{neos:backend.interfaceLanguage()}', version: '{neos:backend.xliffCacheVersion()}'}, controller: 'Backend\Backend', package: 'Neos.Neos', absolute: true) -> f:format.raw()}" />
+    </head>
+    <body class="neos neos-module neos-module--in-embed-mode neos-controls neos-module-{moduleClass}">
+        <div class="neos-module-wrap">
+            <f:render section="content" />
+        </div>
+    </body>
+</html>

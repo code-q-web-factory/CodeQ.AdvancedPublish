@@ -1,0 +1,17 @@
+{
+  "name": "NeosUserInterface",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "node build.js",
+    "watch": "node build.js --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@neos-project/neos-ui-extensibility": "8.3.0-beta3",
+    "esbuild": "^0.17.00",
+    "esbuild-plugin-lightningcss-modules": "^0.1.0"
+  }
+}
