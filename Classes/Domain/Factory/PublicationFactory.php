@@ -6,7 +6,7 @@ use CodeQ\AdvancedPublish\Domain\Model\Publication;
 use CodeQ\AdvancedPublish\Domain\Model\PublicationInterface;
 use CodeQ\AdvancedPublish\Domain\Service\UserService;
 use CodeQ\AdvancedPublish\Utility\IpAnonymizer;
-use CodeQ\Revisions\Domain\Model\Revision;
+use NEOSidekick\Revisions\Domain\Model\Revision;
 use DateTimeImmutable;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Persistence\PersistenceManagerInterface;

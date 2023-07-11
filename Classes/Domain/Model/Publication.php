@@ -3,7 +3,7 @@
 namespace CodeQ\AdvancedPublish\Domain\Model;
 
 use CodeQ\AdvancedPublish\Domain\Service\UserService;
-use CodeQ\Revisions\Domain\Model\Revision;
+use NEOSidekick\Revisions\Domain\Model\Revision;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Neos\ContentRepository\Domain\Model\Workspace;

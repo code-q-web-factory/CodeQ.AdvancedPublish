@@ -4,7 +4,7 @@ namespace CodeQ\AdvancedPublish\Aop;
 
 use CodeQ\AdvancedPublish\Domain\Factory\PublicationFactory;
 use CodeQ\AdvancedPublish\Domain\Repository\PublicationRepository;
-use CodeQ\Revisions\Domain\Model\Revision;
+use NEOSidekick\Revisions\Domain\Model\Revision;
 use Exception;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Aop\JoinPointInterface;
@@ -43,7 +43,7 @@ class RevisionAspect
      * @param  JoinPointInterface  $joinPoint
      * @return void
      *
-     * @Flow\AfterReturning("method(CodeQ\Revisions\Service\RevisionService->applyRevision())")
+     * @Flow\AfterReturning("method(NEOSidekick\Revisions\Service\RevisionService->applyRevision())")
      */
     public function afterReturningApplyRevision(JoinPointInterface $joinPoint): void
     {
