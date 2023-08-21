@@ -5,9 +5,11 @@
     "require": {
         "neos/neos": "^7 || ^8",
         "sandstorm/templatemailer": "^2",
-        "neosidekick/revisions": "*",
-        "ext-bz2": "*",
-        "ext-igbinary": "*"
+        "neosidekick/revisions": "*"
+    },
+    "suggest": {
+        "ext-bz2": "Install bz2 extension to compress changes content",
+        "ext-igbinary": "Install igbinary for better serialization"
     },
     "autoload": {
         "psr-4": {
