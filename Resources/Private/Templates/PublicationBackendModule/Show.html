@@ -147,6 +147,12 @@
     </f:form>
 
     <script src="{f:uri.resource(path: 'JavaScript/Main.min.js', package: 'Neos.Neos')}"></script>
+    <f:for
+            each="{settings.moduleConfiguration.additionalResources.javaScripts}"
+            as="additionalResource"
+    >
+        <script src="{f:uri.resource(path: additionalResource)}"></script>
+    </f:for>
     <script src="{f:uri.resource(path: 'JavaScript/Index.js', package: 'CodeQ.AdvancedPublish')}"></script>
 </f:section>
 

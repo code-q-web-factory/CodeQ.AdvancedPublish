@@ -9,6 +9,9 @@ Neos:
             description: 'i18n'
             icon: 'icon-star'
             mainStylesheet: 'Lite'
+            additionalResources:
+              javaScripts:
+                - 'resource://CodeQ.AdvancedPublish/Public/JavaScript/Index.js'
   Flow:
     mvc:
       routes:

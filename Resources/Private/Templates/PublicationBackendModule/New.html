@@ -72,13 +72,7 @@
                                             <f:render partial="Module/Shared/DocumentBreadcrumb" arguments="{node: document.documentNode, showIcon: true}"></f:render>
                                         </div>
 
-                                        <div class="neos-span2 neos-pull-right neos-aRight">
-                                            <f:if condition="{document.documentNode.removed}">
-                                                <f:else>
-                                                    <neos:link.node node="{document.documentNode}" absolute="1" target="neosPreview" class="neos-button" title="{neos:backend.translate(id: 'workspaces.openPageInWorkspace', source: 'Modules', package: 'Neos.Neos', value: 'Open page in \"{0}\" workspace', arguments: {0: selectedWorkspaceLabel})}" additionalAttributes="{data-neos-toggle: 'tooltip'}"><i class="fas fa-external-link-alt icon-white"></i></neos:link.node>
-                                                </f:else>
-                                            </f:if>
-                                        </div>
+                                        <div class="neos-span2 neos-pull-right neos-aRight"></div>
                                     </div>
                                     </td>
                                     <td class="neos-action neos-folder">
@@ -164,7 +158,4 @@
             </f:if>
         </f:else>
     </f:if>
-
-    <script src="{f:uri.resource(path: 'JavaScript/Main.min.js', package: 'Neos.Neos')}"></script>
-    <script src="{f:uri.resource(path: 'JavaScript/Index.js', package: 'CodeQ.AdvancedPublish')}"></script>
 </f:section>
