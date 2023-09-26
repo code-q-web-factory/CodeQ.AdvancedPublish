@@ -485,7 +485,7 @@ class WorkspaceService
      * Creates an array of workspace names and their respective titles which are possible base workspaces for other
      * workspaces.
      *
-     * @param  Workspace  $excludedWorkspace  If set, this workspace will be excluded from the list of returned workspaces
+     * @param  Workspace|null  $excludedWorkspace  If set, this workspace will be excluded from the list of returned workspaces
      * @return array
      */
     public function prepareBaseWorkspaceOptions(Workspace $excludedWorkspace = null)
