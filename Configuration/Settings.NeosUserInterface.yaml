@@ -13,3 +13,4 @@ Neos:
         'CodeQ.AdvancedPublish':
           enabled: '${Configuration.setting("CodeQ.AdvancedPublish.enabled")}'
           iframeUri: '/neos/advancedpublish/new?inEmbedMode=true'
+          isSuperEditor: '${Security.hasRole("CodeQ.AdvancedPublish:SuperEditor")}'

@@ -85,6 +85,11 @@ roles:
 #      - privilegeTarget: 'CodeQ.AdvancedPublish:Publication.canViewOwn'
 #        permission: GRANT
 
+  'CodeQ.AdvancedPublish:SuperEditor':
+    abstract: true
+    description: >-
+      Can access the normal publish dropdown and use different workspaces
+    privileged: []
 
   'Neos.Neos:Administrator':
     privileges:
