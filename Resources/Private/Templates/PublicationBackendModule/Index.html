@@ -60,15 +60,14 @@
             </f:if>
         </div>
         <div class="neos-footer">
-            <f:security.ifAccess privilegeTarget="CodeQ.AdvancedPublish:PublicationBackendModuleController.canCreatePublications">
-                <f:link.action action="new" class="neos-button neos-button-success">Neue Veröffentlichung erstellen</f:link.action>
-            </f:security.ifAccess>
-
-
             <button form="postHelper" formaction="{f:uri.action(action: 'discardPersonalWorkspace')}" type="submit" class="neos-button neos-button-danger">
                 <i class="fas fa-trash icon-white"></i>
                 Eigene aktuelle Änderungen verwerfen
             </button>
+
+            <f:security.ifAccess privilegeTarget="CodeQ.AdvancedPublish:PublicationBackendModuleController.canCreatePublications">
+                <f:link.action action="new" class="neos-button neos-button-success">Neue Veröffentlichung erstellen</f:link.action>
+            </f:security.ifAccess>
         </div>
     </div>
 
