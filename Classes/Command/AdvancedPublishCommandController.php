@@ -87,7 +87,7 @@ class AdvancedPublishCommandController extends CommandController
             $dateTime = $dateTime->modify(sprintf('-%s', $lifetime));
             $publicationsToBeAnonymized = $this->publicationRepository->findByCreationDateOrEarlier($dateTime);
 
-            $this->output->output(PHP_EOL.'Found %s publications for anonymization'.PHP_EOL, [$publicationsToBeAnonymized->count()]);
+            $this->output->output(PHP_EOL . 'Found %s publications for anonymization' . PHP_EOL, [$publicationsToBeAnonymized->count()]);
 
             $this->output->progressStart($publicationsToBeAnonymized->count());
             /** @var Publication $publication */
@@ -98,7 +98,7 @@ class AdvancedPublishCommandController extends CommandController
             $this->output->progressFinish();
             $this->output->output(PHP_EOL);
         } else {
-            $this->output->output(PHP_EOL.'This command is disabled by configuration. To enable, set the configuration of CodeQ.AdvancedPublish.anonymizeCommand.lifetime to a valid date modifier string.'.PHP_EOL);
+            $this->output->output(PHP_EOL . 'This command is disabled by configuration. To enable, set the configuration of CodeQ.AdvancedPublish.anonymizeCommand.lifetime to a valid date modifier string.' . PHP_EOL);
         }
     }
 
@@ -119,7 +119,7 @@ class AdvancedPublishCommandController extends CommandController
             $dateTime = $dateTime->modify(sprintf('-%s', $lifetime));
             $publicationsToBeRemoved = $this->publicationRepository->findByCreationDateOrEarlier($dateTime);
 
-            $this->output->output(PHP_EOL.'Found %s publications for removal'.PHP_EOL, [$publicationsToBeRemoved->count()]);
+            $this->output->output(PHP_EOL . 'Found %s publications for removal' . PHP_EOL, [$publicationsToBeRemoved->count()]);
 
             $this->output->progressStart($publicationsToBeRemoved->count());
             /** @var Publication $publication */
@@ -130,7 +130,7 @@ class AdvancedPublishCommandController extends CommandController
             $this->output->progressFinish();
             $this->output->output(PHP_EOL);
         } else {
-            $this->output->output(PHP_EOL.'This command is disabled by configuration. To enable, set the configuration of CodeQ.AdvancedPublish.cleanupCommand.lifetime to a valid date modifier string.'.PHP_EOL);
+            $this->output->output(PHP_EOL . 'This command is disabled by configuration. To enable, set the configuration of CodeQ.AdvancedPublish.cleanupCommand.lifetime to a valid date modifier string.' . PHP_EOL);
         }
     }
 }

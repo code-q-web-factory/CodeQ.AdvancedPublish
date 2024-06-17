@@ -127,7 +127,7 @@ class WorkspaceService
                     // $document will be null if we have a broken root line for this node. This actually should never happen, but currently can in some scenarios.
                     if ($document !== null) {
                         $documentPath = implode('/', array_slice(explode('/', $document->getPath()), 3));
-                        $relativePath = str_replace(sprintf(SiteService::SITES_ROOT_PATH.'/%s/%s', $siteNodeName, $documentPath), '', $node->getPath());
+                        $relativePath = str_replace(sprintf(SiteService::SITES_ROOT_PATH . '/%s/%s', $siteNodeName, $documentPath), '', $node->getPath());
                         if (!isset($siteChanges[$siteNodeName]['siteNode'])) {
                             $siteChanges[$siteNodeName]['siteNode'] = $this->siteRepository->findOneByNodeName($siteNodeName);
                         }
@@ -307,12 +307,12 @@ class WorkspaceService
                 $changedLines = trim(implode('', $block['changed']['lines']), " \t\n\r\0\xC2\xA0");
                 if ($baseLines === '') {
                     foreach ($block['changed']['lines'] as $lineIndex => $line) {
-                        $diffArray[$index][$blockIndex]['changed']['lines'][$lineIndex] = '<ins>'.$line.'</ins>';
+                        $diffArray[$index][$blockIndex]['changed']['lines'][$lineIndex] = '<ins>' . $line . '</ins>';
                     }
                 }
                 if ($changedLines === '') {
                     foreach ($block['base']['lines'] as $lineIndex => $line) {
-                        $diffArray[$index][$blockIndex]['base']['lines'][$lineIndex] = '<del>'.$line.'</del>';
+                        $diffArray[$index][$blockIndex]['base']['lines'][$lineIndex] = '<del>' . $line . '</del>';
                     }
                 }
             }
@@ -329,7 +329,8 @@ class WorkspaceService
     public function getPropertyLabel($propertyName, NodeInterface $changedNode)
     {
         $properties = $changedNode->getNodeType()->getProperties();
-        if (!isset($properties[$propertyName]) ||
+        if (
+            !isset($properties[$propertyName]) ||
             !isset($properties[$propertyName]['ui']['label'])
         ) {
             return $propertyName;

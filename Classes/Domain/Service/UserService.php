@@ -73,7 +73,7 @@ class UserService
     public function findPublicWorkspaceForUser(User $user): ?Workspace
     {
         $account = $this->findNeosBackendAccount($user);
-        $publicWorkspaceIdentifier = 'public-'.UserUtility::slugifyUsername($account->getAccountIdentifier());
+        $publicWorkspaceIdentifier = 'public-' . UserUtility::slugifyUsername($account->getAccountIdentifier());
 
         return $this->workspaceRepository->findByIdentifier($publicWorkspaceIdentifier);
     }
@@ -127,7 +127,7 @@ class UserService
         $userWorkspaceName = UserUtility::getPersonalWorkspaceNameForUsername($accountIdentifier);
         $userWorkspace = $this->workspaceRepository->findByIdentifier($userWorkspaceName);
 
-        $publicWorkspaceIdentifier = 'public-'.UserUtility::slugifyUsername($accountIdentifier);
+        $publicWorkspaceIdentifier = 'public-' . UserUtility::slugifyUsername($accountIdentifier);
         $publicWorkspace = $this->workspaceRepository->findByIdentifier($publicWorkspaceIdentifier);
         if (is_null($publicWorkspace)) {
             $publicWorkspace = new Workspace($publicWorkspaceIdentifier, $liveWorkspace, $user);
@@ -150,7 +150,7 @@ class UserService
 
         $pendingPublicationsForUser = $this->publicationRepository->findPendingByEditor($user);
         /** @var Publication $publication */
-        foreach($pendingPublicationsForUser as $publication) {
+        foreach ($pendingPublicationsForUser as $publication) {
             $this->publicationRepository->remove($publication);
         }
     }
@@ -172,8 +172,10 @@ class UserService
             }
 
             $canReview = $this->hasRole($neosBackendAccount, new Role('CodeQ.AdvancedPublish:CanReview')) || $this->hasRole($neosBackendAccount, new Role('Neos.Neos:Administrator'));
-            $isCurrentUserAndCanReviewOwnRequests = $currentUser === $user && ($this->hasRole($neosBackendAccount,
-                        new Role('CodeQ.AdvancedPublish:CanReviewOwnRequests')) || $this->hasRole($neosBackendAccount, new Role('Neos.Neos:Administrator')));
+            $isCurrentUserAndCanReviewOwnRequests = $currentUser === $user && ($this->hasRole(
+                $neosBackendAccount,
+                new Role('CodeQ.AdvancedPublish:CanReviewOwnRequests')
+            ) || $this->hasRole($neosBackendAccount, new Role('Neos.Neos:Administrator')));
 
             if (!($canReview || $isCurrentUserAndCanReviewOwnRequests)) {
                 continue;
