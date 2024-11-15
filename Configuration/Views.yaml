@@ -12,7 +12,7 @@
   requestFilter: 'mainRequest.isPackage("CodeQ.AdvancedPublish")'
   viewObjectName: Neos\FluidAdaptor\View\TemplateView
   options:
-    layoutPathAndFilename: 'resource://CodeQ.AdvancedPublish/Private/Layouts/Default.html'
+    layoutPathAndFilename: 'resource://CodeQ.AdvancedPublish/Private/Layouts/InModal.html'
     partialRootPaths:
       - 'resource://CodeQ.AdvancedPublish/Private/Partials'
       - 'resource://Neos.Neos/Private/Partials'
