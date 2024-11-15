@@ -13,7 +13,7 @@
     </f:if>
     <f:if condition="{avoidCopying}">
         <style>
-            body {
+            .neos-content {
                 -webkit-user-select: none;
                 -moz-user-select: none;
                 -ms-user-select: none;
@@ -69,18 +69,8 @@
                                     <div class="neos-row-fluid">
                                         <div class="neos-span2">
                                             {neos:backend.translate(id: 'pathCaption', source: 'Main', package: 'Neos.Neos')}:
-                                            <f:for each="{document.documentNode.breadcrumbs}" as="documentNode" iteration="{iterator}">/
-                                                <f:if condition="{showIcon}">
-                                                    <f:if condition="{documentNode.nodeType.ui.icon}">
-                                                        <i class="{documentNode.nodeType.ui.icon}"
-                                                           title="{documentNode.nodeType.label}"
-                                                           data-neos-toggle="tooltip"></i></f:if>
-                                                </f:if>
-                                                {documentNode.label}
-                                            </f:for>
+                                            <f:render partial="Module/Shared/DocumentBreadcrumb" arguments="{node: document.documentNode, showIcon: true}"></f:render>
                                         </div>
-
-                                        <div class="neos-span2 neos-pull-right neos-aRight"></div>
                                     </div>
                                 </td>
                                 <td class="neos-action neos-folder">
@@ -145,15 +135,6 @@
         <f:form.hidden name="inEmbedMode" value="{inEmbedMode}" />
         <f:form.hidden name="redirectToAction" value="{f:if(condition: inEmbedMode, then: 'new', else: 'index')}" />
     </f:form>
-
-    <script src="{f:uri.resource(path: 'JavaScript/Main.min.js', package: 'Neos.Neos')}"></script>
-    <f:for
-            each="{settings.moduleConfiguration.additionalResources.javaScripts}"
-            as="additionalResource"
-    >
-        <script src="{f:uri.resource(path: additionalResource)}"></script>
-    </f:for>
-    <script src="{f:uri.resource(path: 'JavaScript/Index.js', package: 'CodeQ.AdvancedPublish')}"></script>
 </f:section>
 
 <f:section name="actions"></f:section>
