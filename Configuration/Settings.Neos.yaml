@@ -10,6 +10,8 @@ Neos:
             icon: 'icon-star'
             mainStylesheet: 'Lite'
             additionalResources:
+              styleSheets:
+                - 'resource://CodeQ.AdvancedPublish/Public/Styles/Index.css'
               javaScripts:
                 - 'resource://CodeQ.AdvancedPublish/Public/JavaScript/Index.js'
   Flow:
