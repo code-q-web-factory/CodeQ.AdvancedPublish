@@ -1,3 +1,8 @@
 .neos-module--in-embed-mode .neos-module-wrap {
     padding-top: 24px !important;
 }
+
+.neos.neos-module table.neos-table th.no-padding:first-child,
+.neos.neos-module table.neos-table td.no-padding:first-child {
+    padding: 0 !important;
+}

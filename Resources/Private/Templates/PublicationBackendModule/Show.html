@@ -89,7 +89,7 @@
                             </tr>
                             <f:for each="{document.changes}" key="relativePath" as="change">
                                 <tr class="neos-change fold-{document.documentNode.identifier} document-{document.documentNode.identifier}" data-nodepath="{change.node.path}" data-ismoved="{f:if(condition: change.isMoved, then: 'true', else: 'false')}" data-isnew="{f:if(condition: change.isNew, then: 'true', else: 'false')}">
-                                    <td class="neos-priority1"></td>
+                                    <td class="neos-priority1 no-padding"></td>
                                     <td id="change-{change.node.identifier}" {f:render(partial: 'Module/Management/Workspaces/ContentChangeAttributes', arguments: {change: change})} data-neos-toggle="tooltip" data-placement="left" data-container="body">
                                     <f:render partial="Module/Management/Workspaces/ContentChangeDiff" arguments="{change: change, contentDimensions: contentDimensions}"/>
                                     </td>
