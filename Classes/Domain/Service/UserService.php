@@ -174,14 +174,12 @@ class UserService
 
             $isAdministrator = RolesUtility::containsRole($neosBackendAccount->getRoles(), 'Neos.Neos:Administrator');
             $canReview = RolesUtility::containsRole($neosBackendAccount->getRoles(), 'CodeQ.AdvancedPublish:AbstractReviewer') || $isAdministrator;
-            $isCurrentUserAndCanReviewOwnRequests =
-                $currentUser === $user &&
-                (
-                    RolesUtility::containsRole($neosBackendAccount->getRoles(), 'CodeQ.AdvancedPublish:CanReviewerOwnRequests') ||
-                    $isAdministrator
-                );
-
-            if (!($canReview || $isCurrentUserAndCanReviewOwnRequests)) {
+            if (!$canReview) {
+                continue;
+            }
+            $isCurrentUser = $currentUser === $user;
+            $canReviewOwnRequests = RolesUtility::containsRole($neosBackendAccount->getRoles(), 'CodeQ.AdvancedPublish:CanReviewOwnRequests') || $isAdministrator;
+            if ($isCurrentUser && !$canReviewOwnRequests) {
                 continue;
             }
 
