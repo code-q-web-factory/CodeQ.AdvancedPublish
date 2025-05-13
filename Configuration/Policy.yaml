@@ -6,8 +6,10 @@ privilegeTargets:
       matcher: 'method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->indexAction(filter == null))'
     'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewOwnPublications':
       matcher: 'method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->showAction(publication.editor === current.userInformation.backendUser))'
-    'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewAssignedPublications':
+    'CodeQ.AdvancedPublish:PublicationBackendModuleController.canListAssignedPublications':
       matcher: 'method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->indexAction(filter === "assigned"))'
+    'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewAssignedPublications':
+      matcher: 'method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->showAction(publication.reviewer === current.userInformation.backendUser))'
     'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewAllPublications':
       matcher: 'method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->indexAction(filter === "all")) || method(CodeQ\AdvancedPublish\Controller\PublicationBackendModuleController->showAction())'
     'CodeQ.AdvancedPublish:PublicationBackendModuleController.canCreatePublications':
@@ -60,6 +62,8 @@ roles:
   'CodeQ.AdvancedPublish:AbstractReviewer':
     abstract: true
     privileges:
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canListAssignedPublications'
+        permission: GRANT
       - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewAssignedPublications'
         permission: GRANT
       - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canReviewAssignedPublications'
@@ -76,6 +80,8 @@ roles:
   'CodeQ.AdvancedPublish:CanReviewOwnRequests':
     abstract: true
     privileges:
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canListAssignedPublications'
+        permission: GRANT
       - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewAssignedPublications'
         permission: GRANT
       - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canReviewAssignedPublications'
@@ -98,6 +104,8 @@ roles:
   'Neos.Neos:Administrator':
     privileges:
       - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewAllPublications'
+        permission: GRANT
+      - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canListAssignedPublications'
         permission: GRANT
       - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewAssignedPublications'
         permission: GRANT
