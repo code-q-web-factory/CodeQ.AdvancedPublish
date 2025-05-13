@@ -7,7 +7,6 @@ use CodeQ\AdvancedPublish\Domain\Model\Publication;
 use CodeQ\AdvancedPublish\Domain\Model\PublicationInterface;
 use CodeQ\AdvancedPublish\Domain\Repository\PublicationRepository;
 use CodeQ\AdvancedPublish\Utility\IpAnonymizer;
-use DateTimeImmutable;
 use Exception;
 use Neos\ContentRepository\Domain\Repository\WorkspaceRepository;
 use Neos\Flow\Annotations as Flow;
@@ -15,7 +14,6 @@ use Neos\Flow\Mvc\Routing\UriBuilder;
 use Neos\Flow\Persistence\Exception\IllegalObjectTypeException;
 use Neos\Flow\Persistence\PersistenceManagerInterface;
 use Neos\Flow\Security\Context;
-use Neos\Flow\Security\Policy\Role;
 use Neos\Flow\Utility\Now;
 use Neos\Http\Factories\ServerRequestFactory;
 use Neos\Neos\Domain\Model\User;
@@ -133,26 +131,6 @@ class PublicationService
      */
     public function emitPublicationCreated(Publication $publication): void
     {
-    }
-
-    /**
-     * @return array<User>
-     */
-    public function findAuthorizedReviewers(): array
-    {
-        $authorizedReviewers = [];
-        $userIterator = $this->userRepository->findAllIterator();
-        /** @var User $user */
-        foreach ($userIterator as $user) {
-            foreach ($user->getAccounts() as $account) {
-                if ($account->hasRole(new Role('CodeQ.AdvancedPublish:LivePublisher'))) {
-                    $authorizedReviewers[] = $user;
-                    break;
-                }
-            }
-        }
-
-        return $authorizedReviewers;
     }
 
     /**

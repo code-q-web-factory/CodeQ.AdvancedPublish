@@ -18,3 +18,5 @@ CodeQ:
       avoidPrinting: false
       avoidCopying: false
       enableCompression: false
+    reviewers:
+      filterImplementations: []

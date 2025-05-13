@@ -57,7 +57,7 @@ roles:
 #      - privilegeTarget: 'CodeQ.AdvancedPublish:Publication.canViewOwn'
 #        permission: GRANT
 
-  'CodeQ.AdvancedPublish:CanReview':
+  'CodeQ.AdvancedPublish:AbstractReviewer':
     abstract: true
     privileges:
       - privilegeTarget: 'CodeQ.AdvancedPublish:PublicationBackendModuleController.canViewAssignedPublications'
@@ -68,6 +68,10 @@ roles:
 #        permission: GRANT
 #      - privilegeTarget: 'CodeQ.AdvancedPublish:Publication.canViewOwn'
 #        permission: GRANT
+
+  'CodeQ.AdvancedPublish:CanReview':
+    parentRoles: ['CodeQ.AdvancedPublish:AbstractReviewer']
+    privileges: []
 
   'CodeQ.AdvancedPublish:CanReviewOwnRequests':
     abstract: true

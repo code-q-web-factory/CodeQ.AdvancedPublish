@@ -4,6 +4,7 @@ namespace CodeQ\AdvancedPublish\Domain\Service;
 
 use CodeQ\AdvancedPublish\Domain\Model\Publication;
 use CodeQ\AdvancedPublish\Domain\Repository\PublicationRepository;
+use CodeQ\AdvancedPublish\Utility\RolesUtility;
 use Neos\ContentRepository\Domain\Model\Workspace;
 use Neos\ContentRepository\Domain\Repository\WorkspaceRepository;
 use Neos\ContentRepository\Exception\WorkspaceException;
@@ -164,18 +165,21 @@ class UserService
         $users = $this->userRepository->findAll();
         $authorizedReviewers = [];
         /** @var User $user */
-        foreach ($users as $i => $user) {
+        foreach ($users as $user) {
             try {
                 $neosBackendAccount = $this->findNeosBackendAccount($user);
             } catch (\Exception) {
                 continue;
             }
 
-            $canReview = $this->hasRole($neosBackendAccount, new Role('CodeQ.AdvancedPublish:CanReview')) || $this->hasRole($neosBackendAccount, new Role('Neos.Neos:Administrator'));
-            $isCurrentUserAndCanReviewOwnRequests = $currentUser === $user && ($this->hasRole(
-                $neosBackendAccount,
-                new Role('CodeQ.AdvancedPublish:CanReviewOwnRequests')
-            ) || $this->hasRole($neosBackendAccount, new Role('Neos.Neos:Administrator')));
+            $isAdministrator = RolesUtility::containsRole($neosBackendAccount->getRoles(), 'Neos.Neos:Administrator');
+            $canReview = RolesUtility::containsRole($neosBackendAccount->getRoles(), 'CodeQ.AdvancedPublish:AbstractReviewer') || $isAdministrator;
+            $isCurrentUserAndCanReviewOwnRequests =
+                $currentUser === $user &&
+                (
+                    RolesUtility::containsRole($neosBackendAccount->getRoles(), 'CodeQ.AdvancedPublish:CanReviewerOwnRequests') ||
+                    $isAdministrator
+                );
 
             if (!($canReview || $isCurrentUserAndCanReviewOwnRequests)) {
                 continue;
@@ -185,30 +189,6 @@ class UserService
         }
 
         return $authorizedReviewers;
-    }
-
-    /**
-     * Checks if an account has a certain role by looking up all parent roles of the account roles.
-     *
-     * @param  Account  $account
-     * @param  Role  $targetRole
-     * @return bool
-     */
-    protected function hasRole(Account $account, Role $targetRole): bool
-    {
-        foreach ($account->getRoles() as $role) {
-            if ($role->getIdentifier() === $targetRole->getIdentifier()) {
-                return true;
-            }
-
-            foreach ($role->getAllParentRoles() as $parentRole) {
-                if ($parentRole->getIdentifier() === $targetRole->getIdentifier()) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     /**

@@ -11,16 +11,16 @@ use CodeQ\AdvancedPublish\Domain\Repository\PublicationRepository;
 use CodeQ\AdvancedPublish\Domain\Service\PublicationService;
 use CodeQ\AdvancedPublish\Domain\Service\UserService;
 use CodeQ\AdvancedPublish\Domain\Service\WorkspaceService;
+use CodeQ\AdvancedPublish\Exception\ReviewerNotAllowedToPublishException;
 use Neos\ContentRepository\Domain\Model\NodeData;
 use Neos\ContentRepository\Domain\Repository\NodeDataRepository;
 use Neos\ContentRepository\Domain\Repository\WorkspaceRepository;
+use Neos\Error\Messages\Message;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\Controller\ActionController;
 use Neos\Flow\Mvc\Exception\StopActionException;
 use Neos\Flow\Persistence\Exception\IllegalObjectTypeException;
-use Neos\Neos\Controller\Module\AbstractModuleController;
 use Neos\Neos\Domain\Model\User;
-use Neos\Neos\Domain\Repository\UserRepository;
 
 class PublicationBackendModuleController extends ActionController
 {
@@ -122,7 +122,15 @@ class PublicationBackendModuleController extends ActionController
      */
     public function createAction(User $reviewer, string $comment = null, bool $inEmbedMode = false)
     {
-        $this->publicationService->create($reviewer, $comment);
+        try {
+            $this->publicationService->create($reviewer, $comment);
+        } catch (ReviewerNotAllowedToPublishException $e) {
+            $this->addFlashMessage($e->getMessage(), '', Message::SEVERITY_ERROR, [], $e->getCode());
+            $this->redirect('new');
+        } catch (\Exception $e) {
+            $this->addFlashMessage('Folgender Fehler ist aufgetreten: ' . $e->getMessage() . ' (' . $e->getCode() . ')', 'Error', Message::SEVERITY_ERROR);
+            $this->redirect('new');
+        }
         if ($inEmbedMode === false) {
             $this->redirect('index');
         } else {

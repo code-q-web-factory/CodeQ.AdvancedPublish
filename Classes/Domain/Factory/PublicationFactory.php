@@ -4,8 +4,11 @@ namespace CodeQ\AdvancedPublish\Domain\Factory;
 
 use CodeQ\AdvancedPublish\Domain\Model\Publication;
 use CodeQ\AdvancedPublish\Domain\Model\PublicationInterface;
+use CodeQ\AdvancedPublish\Domain\Service\PolicyService;
 use CodeQ\AdvancedPublish\Domain\Service\UserService;
+use CodeQ\AdvancedPublish\Exception\ReviewerNotAllowedToPublishException;
 use CodeQ\AdvancedPublish\Utility\IpAnonymizer;
+use Neos\ContentRepository\Domain\Service\PublishingService;
 use NEOSidekick\Revisions\Domain\Model\Revision;
 use DateTimeImmutable;
 use Neos\Flow\Annotations as Flow;
@@ -30,8 +33,21 @@ class PublicationFactory
     protected $userService;
 
     /**
+     * @Flow\Inject
+     * @var PublishingService
+     */
+    protected $publishingService;
+
+    /**
+     * @Flow\Inject
+     * @var PolicyService
+     */
+    protected $policyService;
+
+    /**
      * @param  User  $reviewer
      * @return Publication
+     * @throws ReviewerNotAllowedToPublishException
      */
     public function fromCurrentUserAndReviewer(User $reviewer): Publication
     {
@@ -43,11 +59,17 @@ class PublicationFactory
         $publicWorkspace = $this->userService->findPublicWorkspaceForCurrentUser();
         $publication->setWorkspace($publicWorkspace);
 
+        array_map(
+            function ($node) use ($reviewer) {
+                $this->policyService->checkReviewerAllowedToPublishNode($reviewer, $node);
+            },
+            $this->publishingService->getUnpublishedNodes($publicWorkspace)
+        );
+
         return $publication;
     }
 
     /**
-     * @param  User  $user
      * @param  Revision  $revision
      * @return Publication
      */
