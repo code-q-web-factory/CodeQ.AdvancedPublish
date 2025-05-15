@@ -73,7 +73,7 @@ class UserService
      */
     public function findPublicWorkspaceForUser(User $user): ?Workspace
     {
-        $account = $this->findNeosBackendAccount($user);
+        $account = UserService::findNeosBackendAccount($user);
         $publicWorkspaceIdentifier = 'public-' . UserUtility::slugifyUsername($account->getAccountIdentifier());
 
         return $this->workspaceRepository->findByIdentifier($publicWorkspaceIdentifier);
@@ -84,7 +84,7 @@ class UserService
      * @return Account
      * @throws Exception
      */
-    public function findNeosBackendAccount(User $user): Account
+    public static function findNeosBackendAccount(User $user): Account
     {
         foreach ($user->getAccounts() as $account) {
             if ($account->getAuthenticationProviderName() === 'Neos.Neos:Backend') {
@@ -123,7 +123,7 @@ class UserService
     public function createWorkspacesForUser(User $user): void
     {
         $liveWorkspace = $this->workspaceRepository->findByIdentifier('live');
-        $account = $this->findNeosBackendAccount($user);
+        $account = UserService::findNeosBackendAccount($user);
         $accountIdentifier = $account->getAccountIdentifier();
         $userWorkspaceName = UserUtility::getPersonalWorkspaceNameForUsername($accountIdentifier);
         $userWorkspace = $this->workspaceRepository->findByIdentifier($userWorkspaceName);
@@ -167,7 +167,7 @@ class UserService
         /** @var User $user */
         foreach ($users as $user) {
             try {
-                $neosBackendAccount = $this->findNeosBackendAccount($user);
+                $neosBackendAccount = UserService::findNeosBackendAccount($user);
             } catch (\Exception) {
                 continue;
             }
