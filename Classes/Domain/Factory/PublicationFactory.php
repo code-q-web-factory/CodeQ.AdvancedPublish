@@ -57,6 +57,11 @@ class PublicationFactory
         $publication->setReviewer($reviewer);
 
         $publicWorkspace = $this->userService->findPublicWorkspaceForCurrentUser();
+
+        if (!$publicWorkspace) {
+            throw new \RuntimeException('Public workspace not found', 1752179675157);
+        }
+
         $publication->setWorkspace($publicWorkspace);
 
         array_map(
@@ -84,6 +89,11 @@ class PublicationFactory
         $publication->setResolved(new DateTimeImmutable());
 
         $publicWorkspace = $this->userService->findPublicWorkspaceForCurrentUser();
+
+        if (!$publicWorkspace) {
+            throw new \RuntimeException('Public workspace not found', 1752179675157);
+        }
+
         $publication->setWorkspace($publicWorkspace);
 
         $publication->setRevision($revision);
