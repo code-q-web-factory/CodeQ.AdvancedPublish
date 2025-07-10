@@ -233,8 +233,16 @@ class PublicationBackendModuleController extends ActionController
      */
     public function createAndApproveAction(User $reviewer, string $comment = null, bool $inEmbedMode = false): void
     {
-        $publication = $this->publicationService->create($reviewer, $comment);
-        $this->publicationService->publishAndClose($publication);
+        try {
+            $publication = $this->publicationService->create($reviewer, $comment);
+            $this->publicationService->publishAndClose($publication);
+        } catch (ReviewerNotAllowedToPublishException $e) {
+            $this->addFlashMessage($e->getMessage(), '', Message::SEVERITY_ERROR, [], $e->getCode());
+            $this->redirect('new');
+        } catch (\Exception $e) {
+            $this->addFlashMessage('Folgender Fehler ist aufgetreten: ' . $e->getMessage() . ' (' . $e->getCode() . ')', 'Error', Message::SEVERITY_ERROR);
+            $this->redirect('new');
+        }
         if ($inEmbedMode === false) {
             $this->redirect('index');
         } else {
