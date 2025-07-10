@@ -19,4 +19,5 @@ CodeQ:
       avoidCopying: false
       enableCompression: false
     reviewers:
-      filterImplementations: []
+      filterImplementations:
+        Default: 'CodeQ\AdvancedPublish\Domain\Service\DefaultFilter'

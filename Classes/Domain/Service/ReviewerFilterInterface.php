@@ -7,5 +7,5 @@ use Neos\Neos\Domain\Model\User;
 
 interface ReviewerFilterInterface
 {
-    public function checkFilterConditionsForUserAndNode(User $user, NodeInterface $node): void;
+    public function checkFilterConditionsForUserAndNode(User $user, NodeInterface $node): bool;
 }
