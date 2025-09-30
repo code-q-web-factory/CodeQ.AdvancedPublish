@@ -4,8 +4,6 @@
 <f:section name="content">
     <script>document.body.classList.add('neos-module-management-workspaces')</script>
     <f:form action="resolve" object="{publication}" objectName="publication" id="publicationForm">
-        <f:form.hidden name="action" value="approve" />
-
         <legend>Änderungen von &raquo;{f:render(partial: 'UserName', arguments: {user: publication.editor})}&laquo; am {publication.created -> f:format.date(format: 'd.m.Y H:i')}</legend>
         <br />
         <div class="neos-row-fluid neos-module-container">
@@ -81,19 +79,15 @@
         </div>
 
         <f:render section="actions" arguments="{_all}" />
-    </f:form>
 
-    <f:form id="rejectionForm" action="resolve" object="{publication}" objectName="publication">
-        <f:form.hidden name="action" value="reject" />
-    </f:form>
-
-    <div class="neos-footer">
-        <f:link.action action="index" class="neos-button">Zurück</f:link.action>
-        <div class="neos-pull-right">
-            <button type="submit" class="neos-button neos-button-danger" form="rejectionForm">Änderungen ablehnen</button>
-            <button type="submit" class="neos-button neos-button-success" form="publicationForm">Alle Änderungen veröffentlichen</button>
+        <div class="neos-footer">
+            <f:link.action action="index" class="neos-button">Zurück</f:link.action>
+            <div class="neos-pull-right">
+                <f:form.button type="submit" name="action" value="reject" class="neos-button neos-button-danger">Änderungen ablehnen</f:form.button>
+                <f:form.button type="submit" name="action" value="approve" class="neos-button neos-button-success">Alle Änderungen veröffentlichen</f:form.button>
+            </div>
         </div>
-    </div>
+    </f:form>
 </f:section>
 
 <f:section name="actions"></f:section>
