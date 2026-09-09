@@ -176,7 +176,11 @@ class PublicationBackendModuleController extends ActionController
         if ($publication->getStatus() === 'pending') {
             $siteChanges = $this->workspaceService->computeSiteChanges($publication->getWorkspace());
         } else {
-            $siteChanges = $this->workspaceService->hydrateStaticSiteChanges($publication->getChanges());
+            $siteChanges = $publication->getChanges();
+            // Publications created by applying a revision have no changes snapshot.
+            if ($siteChanges !== null) {
+                $siteChanges = $this->workspaceService->hydrateStaticSiteChanges($siteChanges);
+            }
         }
 
         $revisionPageTitle = null;
