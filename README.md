@@ -84,6 +84,26 @@ class YourFilterClass implements ReviewerFilterInterface
 }
 ```
 
+## Publishing from the command line
+
+Large publications can exceed the time limit of a web request. These commands publish to live without a
+time limit and still create an entry in the publication protocol and send the usual notifications.
+
+Approve a pending review request, like the approve button in the backend module.
+The identifier is part of the review link:
+
+```bash
+./flow advancedpublish:approve <publication-identifier>
+```
+
+Publish any workspace based on live and record it as an approved publication.
+The reviewer is checked like in the backend module (reviewer role, reviewer filters,
+`CanReviewOwnRequests` if editor and reviewer are the same user):
+
+```bash
+./flow advancedpublish:publish --workspace <workspace> --editor <username> --reviewer <username> --comment "Approved via ticket 123"
+```
+
 ## Suggested project changes
 
 ### Deny live publishing and manipulation of workspaces

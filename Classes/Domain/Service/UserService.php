@@ -166,27 +166,35 @@ class UserService
         $authorizedReviewers = [];
         /** @var User $user */
         foreach ($users as $user) {
-            try {
-                $neosBackendAccount = UserService::findNeosBackendAccount($user);
-            } catch (\Exception) {
-                continue;
+            if ($this->isAuthorizedReviewer($user, $currentUser)) {
+                $authorizedReviewers[] = $user;
             }
-
-            $isAdministrator = RolesUtility::containsRole($neosBackendAccount->getRoles(), 'Neos.Neos:Administrator');
-            $canReview = RolesUtility::containsRole($neosBackendAccount->getRoles(), 'CodeQ.AdvancedPublish:AbstractReviewer') || $isAdministrator;
-            if (!$canReview) {
-                continue;
-            }
-            $isCurrentUser = $currentUser === $user;
-            $canReviewOwnRequests = RolesUtility::containsRole($neosBackendAccount->getRoles(), 'CodeQ.AdvancedPublish:CanReviewOwnRequests') || $isAdministrator;
-            if ($isCurrentUser && !$canReviewOwnRequests) {
-                continue;
-            }
-
-            $authorizedReviewers[] = $user;
         }
 
         return $authorizedReviewers;
+    }
+
+    /**
+     * @param  User  $reviewer
+     * @param  User|null  $editor
+     * @return bool
+     */
+    public function isAuthorizedReviewer(User $reviewer, ?User $editor): bool
+    {
+        try {
+            $neosBackendAccount = UserService::findNeosBackendAccount($reviewer);
+        } catch (\Exception) {
+            return false;
+        }
+
+        $isAdministrator = RolesUtility::containsRole($neosBackendAccount->getRoles(), 'Neos.Neos:Administrator');
+        $canReview = RolesUtility::containsRole($neosBackendAccount->getRoles(), 'CodeQ.AdvancedPublish:AbstractReviewer') || $isAdministrator;
+        if (!$canReview) {
+            return false;
+        }
+        $canReviewOwnRequests = RolesUtility::containsRole($neosBackendAccount->getRoles(), 'CodeQ.AdvancedPublish:CanReviewOwnRequests') || $isAdministrator;
+
+        return $editor !== $reviewer || $canReviewOwnRequests;
     }
 
     /**
