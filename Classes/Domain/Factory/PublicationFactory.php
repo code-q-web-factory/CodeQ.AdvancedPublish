@@ -11,6 +11,7 @@ use CodeQ\AdvancedPublish\Utility\IpAnonymizer;
 use Neos\ContentRepository\Domain\Service\PublishingService;
 use NEOSidekick\Revisions\Domain\Model\Revision;
 use DateTimeImmutable;
+use Neos\ContentRepository\Domain\Model\Workspace;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Persistence\PersistenceManagerInterface;
 use Neos\Neos\Domain\Model\User;
@@ -51,24 +52,36 @@ class PublicationFactory
      */
     public function fromCurrentUserAndReviewer(User $reviewer): Publication
     {
-        $currentUser = $this->userService->getCurrentlyAuthenticatedUser();
-        $publication = new Publication($currentUser);
-        $publication->setEditorIpAddress(IpAnonymizer::anonymizeIp($_SERVER['REMOTE_ADDR']));
-        $publication->setReviewer($reviewer);
-
         $publicWorkspace = $this->userService->findPublicWorkspaceForCurrentUser();
 
         if (!$publicWorkspace) {
             throw new \RuntimeException('Public workspace not found', 1752179675157);
         }
 
-        $publication->setWorkspace($publicWorkspace);
+        $publication = $this->fromEditorAndReviewerForWorkspace($this->userService->getCurrentlyAuthenticatedUser(), $reviewer, $publicWorkspace);
+        $publication->setEditorIpAddress(IpAnonymizer::anonymizeIp($_SERVER['REMOTE_ADDR']));
+
+        return $publication;
+    }
+
+    /**
+     * @param  User  $editor
+     * @param  User  $reviewer
+     * @param  Workspace  $workspace
+     * @return Publication
+     * @throws ReviewerNotAllowedToPublishException
+     */
+    public function fromEditorAndReviewerForWorkspace(User $editor, User $reviewer, Workspace $workspace): Publication
+    {
+        $publication = new Publication($editor);
+        $publication->setReviewer($reviewer);
+        $publication->setWorkspace($workspace);
 
         array_map(
             function ($node) use ($reviewer) {
                 $this->policyService->checkReviewerAllowedToPublishNode($reviewer, $node);
             },
-            $this->publishingService->getUnpublishedNodes($publicWorkspace)
+            $this->publishingService->getUnpublishedNodes($workspace)
         );
 
         return $publication;

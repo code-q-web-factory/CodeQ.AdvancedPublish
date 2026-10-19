@@ -4,7 +4,6 @@ namespace CodeQ\AdvancedPublish\Domain\Service;
 
 use DateTime;
 use DateTimeImmutable;
-use Exception;
 use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\ContentRepository\Domain\Model\Workspace;
 use Neos\ContentRepository\Domain\Projection\Content\TraversableNodeInterface;
@@ -423,11 +422,12 @@ class WorkspaceService
                             /** @var AssetInterface $changedAsset */
                             $changedAsset = $siteChanges[$siteKey]['documents'][$documentKey]['changes'][$changeKey]['contentChanges'][$propertyName]['changed'];
 
+                            // Without a request (command line) URI generation can fail with an Error, e.g. in UriBuilder aspects
                             $originalAssetPublicUri = '';
                             if ($originalAsset && $originalAsset->getResource()) {
                                 try {
                                     $originalAssetPublicUri = $this->resourceManager->getPublicPersistentResourceUri($originalAsset->getResource());
-                                } catch (Exception $e) {
+                                } catch (\Throwable) {
                                 }
                             }
 
@@ -435,7 +435,7 @@ class WorkspaceService
                             if ($changedAsset && $changedAsset->getResource()) {
                                 try {
                                     $changedAssetPublicUri = $this->resourceManager->getPublicPersistentResourceUri($changedAsset->getResource());
-                                } catch (Exception $e) {
+                                } catch (\Throwable) {
                                 }
                             }
 

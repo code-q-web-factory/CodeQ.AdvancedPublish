@@ -8,6 +8,7 @@ use CodeQ\AdvancedPublish\Domain\Model\PublicationInterface;
 use CodeQ\AdvancedPublish\Domain\Repository\PublicationRepository;
 use CodeQ\AdvancedPublish\Utility\IpAnonymizer;
 use Exception;
+use Neos\ContentRepository\Domain\Model\Workspace;
 use Neos\ContentRepository\Domain\Repository\WorkspaceRepository;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\Routing\UriBuilder;
@@ -134,6 +135,37 @@ class PublicationService
     }
 
     /**
+     * Records an approved publication for the given workspace and publishes the workspace,
+     * e.g. from the command line where large publications cannot time out
+     *
+     * @param  Workspace  $workspace
+     * @param  User  $editor
+     * @param  User  $reviewer
+     * @param  string|null  $comment
+     * @return Publication
+     * @throws Exception
+     */
+    public function createAndPublish(Workspace $workspace, User $editor, User $reviewer, string $comment = null): Publication
+    {
+        $publication = null;
+        $this->securityContext->withoutAuthorizationChecks(function () use ($workspace, $editor, $reviewer, $comment, &$publication) {
+            $publication = $this->publicationFactory->fromEditorAndReviewerForWorkspace($editor, $reviewer, $workspace);
+            $publication->setEditorIpAddress($this->anonymizedClientIp());
+            $publication->setComment($comment);
+            $this->publicationRepository->add($publication);
+        });
+
+        // Self-reviews notify the administrators as in the backend module; a review request to another reviewer would already be resolved
+        if ($editor === $reviewer) {
+            $this->emitPublicationCreated($publication);
+        }
+
+        $this->publishAndClose($publication);
+
+        return $publication;
+    }
+
+    /**
      * @param  Publication  $publication
      * @return void
      * @throws Exception
@@ -142,7 +174,7 @@ class PublicationService
     {
         $this->securityContext->withoutAuthorizationChecks(function () use (&$publication) {
             $publication->setResolved($this->now);
-            $publication->setReviewerIpAddress(IpAnonymizer::anonymizeIp($_SERVER['REMOTE_ADDR']));
+            $publication->setReviewerIpAddress($this->anonymizedClientIp());
             $publication->setChanges($this->workspaceService->renderStaticSiteChanges($this->workspaceService->computeSiteChanges($publication->getWorkspace())));
 
             $unpublishedNodes = $this->publishingService->getUnpublishedNodes($publication->getWorkspace());
@@ -174,7 +206,7 @@ class PublicationService
     {
         $this->securityContext->withoutAuthorizationChecks(function () use (&$publication) {
             $publication->setResolved($this->now);
-            $publication->setReviewerIpAddress(IpAnonymizer::anonymizeIp($_SERVER['REMOTE_ADDR']));
+            $publication->setReviewerIpAddress($this->anonymizedClientIp());
             $publication->setChanges($this->workspaceService->renderStaticSiteChanges($this->workspaceService->computeSiteChanges($publication->getWorkspace())));
             $publication->setStatus(PublicationInterface::STATUS_DECLINED);
             $this->publicationRepository->update($publication);
@@ -242,5 +274,15 @@ class PublicationService
      */
     public function emitPublicationAnonymized(Publication $publication): void
     {
+    }
+
+    /**
+     * Command line requests have no client address
+     *
+     * @return string
+     */
+    protected function anonymizedClientIp(): string
+    {
+        return isset($_SERVER['REMOTE_ADDR']) ? IpAnonymizer::anonymizeIp($_SERVER['REMOTE_ADDR']) : '';
     }
 }
