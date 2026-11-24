@@ -1,9 +1,27 @@
+// A page restored from the back-forward cache keeps the submitting flag of the form it left with
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        document.querySelectorAll('form[data-submitting]').forEach((form) => delete form.dataset.submitting)
+    }
+})
+
 document.addEventListener('DOMContentLoaded', () => {
     // This is necessary for Neos CSS to work in our module
     document.body.classList.add('neos-module-management-workspaces');
     window.exit = function () {
         window.parent.postMessage('closePublicationPopup', window.parent.origin)
     }
+
+    // A second submit while the first request still runs publishes the same workspace twice
+    document.querySelectorAll('form').forEach((form) => {
+        form.addEventListener('submit', (event) => {
+            if (form.dataset.submitting === 'true') {
+                event.preventDefault()
+                return
+            }
+            form.dataset.submitting = 'true'
+        })
+    })
 
     jQuery(function($) {
         jQuery('.fold-toggle').click(function() {

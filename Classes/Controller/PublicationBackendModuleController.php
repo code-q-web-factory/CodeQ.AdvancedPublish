@@ -11,6 +11,7 @@ use CodeQ\AdvancedPublish\Domain\Repository\PublicationRepository;
 use CodeQ\AdvancedPublish\Domain\Service\PublicationService;
 use CodeQ\AdvancedPublish\Domain\Service\UserService;
 use CodeQ\AdvancedPublish\Domain\Service\WorkspaceService;
+use CodeQ\AdvancedPublish\Exception\ConcurrentPublicationException;
 use CodeQ\AdvancedPublish\Exception\ReviewerNotAllowedToPublishException;
 use Neos\ContentRepository\Domain\Model\NodeData;
 use Neos\ContentRepository\Domain\Repository\NodeDataRepository;
@@ -159,7 +160,12 @@ class PublicationBackendModuleController extends ActionController
     public function resolveAction(Publication $publication, string $action = 'approve'): void
     {
         if ($action === 'approve') {
-            $this->publicationService->publishAndClose($publication);
+            try {
+                $this->publicationService->publishAndClose($publication);
+            } catch (ConcurrentPublicationException $e) {
+                $this->addFlashMessage($e->getMessage(), '', Message::SEVERITY_WARNING, [], $e->getCode());
+                $this->redirect('index');
+            }
         } else {
             $this->publicationService->declineAndClose($publication);
         }
@@ -234,11 +240,13 @@ class PublicationBackendModuleController extends ActionController
     public function createAndApproveAction(User $reviewer, string $comment = null, bool $inEmbedMode = false): void
     {
         try {
-            $publication = $this->publicationService->create($reviewer, $comment);
-            $this->publicationService->publishAndClose($publication);
+            $this->publicationService->createAndApprove($reviewer, $comment);
         } catch (ReviewerNotAllowedToPublishException $e) {
             $this->addFlashMessage($e->getMessage(), '', Message::SEVERITY_ERROR, [], $e->getCode());
             $this->redirect('new');
+        } catch (ConcurrentPublicationException $e) {
+            $this->addFlashMessage($e->getMessage(), '', Message::SEVERITY_WARNING, [], $e->getCode());
+            $this->redirect('new', null, null, ['inEmbedMode' => $inEmbedMode]);
         } catch (\Exception $e) {
             $this->addFlashMessage('Folgender Fehler ist aufgetreten: ' . $e->getMessage() . ' (' . $e->getCode() . ')', 'Error', Message::SEVERITY_ERROR);
             $this->redirect('new');
